@@ -1,11 +1,10 @@
 iotProject: myapp.iot/2019-09-17T14:03:14Z
 numberOfDevicesToCreate: 10
-deletionChuckSize: 2000
 hosty: localhost
-host: 172.17.0.16
+host: your_host_here
 username: app
 password: test12
 saslServerName: hotrod
 saslRealm: ApplicationRealm
-csvLogFile: /tmp/populator4.csv
+csvLogFile: /tmp/populator.csv
 logInterval: 10

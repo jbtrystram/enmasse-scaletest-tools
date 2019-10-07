@@ -136,6 +136,7 @@ public class Creater {
                 } else {
                     this.config = config;
                     csv = new CsvLogger(vertx, config.getCsvLogFile());
+                    csv.setInterval(config.getLogInterval());
                     configured.complete();
                 }
             }

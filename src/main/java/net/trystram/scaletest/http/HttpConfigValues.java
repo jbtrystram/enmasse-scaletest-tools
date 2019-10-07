@@ -13,6 +13,7 @@ public class HttpConfigValues extends BaseConfigValues {
     private long numberOfDevicesToCreate;
     private String csvLogFile;
     private String createdIdsFile;
+    private int logInterval = 10;
 
     private int port = 443;
     @JsonProperty("authToken")
@@ -40,6 +41,14 @@ public class HttpConfigValues extends BaseConfigValues {
 
     public void setCreatedIdsFile(String createdIdsFile) {
         this.createdIdsFile = createdIdsFile;
+    }
+
+    public int getLogInterval() {
+        return logInterval;
+    }
+
+    public void setLogInterval(int logInterval) {
+        this.logInterval = logInterval;
     }
 
     public String verify(){
