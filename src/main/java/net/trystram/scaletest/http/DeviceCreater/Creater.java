@@ -1,5 +1,6 @@
 package net.trystram.scaletest.http.DeviceCreater;
 
+import java.util.Collections;
 import net.trystram.scaletest.http.HttpConfigValues;
 import net.trystram.util.CsvLogger;
 
@@ -58,12 +59,10 @@ public class Creater {
         csv.setBeginTime(System.currentTimeMillis());
 
         Buffer deviceIds = Buffer.buffer();
-        List<Future> futureList = new ArrayList<>();
 
        for (long i = 0; i < devicesToCreate; i++) {
 
            Future requestFuture = Future.future();
-           futureList.add(requestFuture);
 
            Future<String> deviceFuture = Future.future();
            client.post(String.format("/v1/devices/%s", config.getTenantId()))
@@ -93,13 +92,13 @@ public class Creater {
                            requestFuture.complete();
                        });
            });
+
+           CompositeFuture.join(Collections.singletonList(requestFuture));
        }
 
-       CompositeFuture.join(futureList).setHandler(res -> {
-           writeIdsToFile(deviceIds, config.getCreatedIdsFile());
-           csv.saveFile();
-           startPromise.complete();
-       });
+        writeIdsToFile(deviceIds, config.getCreatedIdsFile());
+        csv.saveFile();
+        startPromise.complete();
 
         return startPromise;
     }

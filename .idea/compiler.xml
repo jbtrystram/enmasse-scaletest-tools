@@ -7,7 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="enmasse-iot-test-tools" />
+        <module name="enmasse-scaletest-tools" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="enmasse-scaletest-tools" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
 </project>
