@@ -18,8 +18,6 @@ import io.vertx.ext.web.client.WebClient;
 
 import io.vertx.ext.web.client.WebClientOptions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +35,7 @@ public class Creater {
 
     private CsvLogger csv;
     private AtomicLong progress = new AtomicLong(0);
+    private AtomicLong deviceId = new AtomicLong(0);
 
     public Creater(String pathToConfig) {
         VertxOptions vxOptions = new VertxOptions().setBlockedThreadCheckInterval(2000000);
@@ -65,7 +64,7 @@ public class Creater {
            Future requestFuture = Future.future();
 
            Future<String> deviceFuture = Future.future();
-           client.post(String.format("/v1/devices/%s", config.getTenantId()))
+           client.post(String.format("/v1/devices/%s/%s", config.getTenantId(), deviceId.incrementAndGet()))
                    .putHeader("Content-Type", " application/json")
                    .putHeader("Authorization", "Bearer "+config.getPassword())
                    .send(res -> {
