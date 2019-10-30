@@ -10,7 +10,6 @@ import net.trystram.util.BaseConfigValues;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreatorConfigValues extends BaseConfigValues {
 
-
     private long numberOfDevicesToCreate;
     private String csvLogFile;
 
@@ -24,6 +23,14 @@ public class CreatorConfigValues extends BaseConfigValues {
 
     public void setNumberOfDevicesToCreate(long numberOfDevicesToCreate) {
         this.numberOfDevicesToCreate = numberOfDevicesToCreate;
+    }
+
+    @Override
+    public int getPort(){
+        if (super.getPort() == 0){
+            return 11222;
+        }
+        else return super.getPort();
     }
 
     public String getCsvLogFile() {
@@ -56,6 +63,9 @@ public class CreatorConfigValues extends BaseConfigValues {
 
         if (getTenantId() == null) {
             missingValues.add("iotProject ");
+        }
+        if (getPort() == 0) {
+            missingValues.add("port ");
         }
         if (getHost() == null) {
             missingValues.add("host");

@@ -3,6 +3,7 @@ package net.trystram.scaletest.InfinispanDevicesCreator;
 import io.enmasse.iot.service.base.infinispan.cache.DeviceManagementCacheProvider;
 import io.enmasse.iot.service.base.infinispan.config.InfinispanProperties;
 
+import io.enmasse.iot.service.base.infinispan.device.DeviceCredential;
 import io.enmasse.iot.service.base.infinispan.device.DeviceInformation;
 import io.enmasse.iot.service.base.infinispan.device.DeviceKey;
 import io.enmasse.iot.service.base.infinispan.tenant.TenantHandle;
@@ -15,9 +16,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
 
-import java.util.UUID;
-
+import java.util.Collections;
 import net.trystram.util.CsvLogger;
+import org.eclipse.hono.util.CredentialsConstants;
 import org.infinispan.client.hotrod.RemoteCache;
 
 import org.slf4j.Logger;
@@ -67,7 +68,13 @@ public class Populator {
            DeviceInformation deviceInfo = new DeviceInformation();
            deviceInfo.setTenantId(tenantIdToPopulate);
            deviceInfo.setVersion("version");
-           deviceInfo.setDeviceId(UUID.randomUUID().toString());
+           deviceInfo.setDeviceId(String.valueOf(i));
+
+           DeviceCredential cred = new DeviceCredential();
+           cred.setType(CredentialsConstants.SECRETS_TYPE_HASHED_PASSWORD);
+           cred.setAuthId("sensor 1");
+           cred.setSecrets(Collections.singletonList(new JsonObject().put("pwd-plain", "AQIDBAUGBwg=").encode()));
+           deviceInfo.setCredentials(Collections.singletonList(cred));
 
            DeviceKey key = DeviceKey.deviceKey(
                    TenantHandle.of(tenantIdToPopulate.split("/")[0],

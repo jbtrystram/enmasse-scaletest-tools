@@ -9,7 +9,7 @@ public class BaseConfigValues {
     private String tenantId;
 
     private String host;
-    int port;
+    private int port;
     private String username;
     private String password;
 

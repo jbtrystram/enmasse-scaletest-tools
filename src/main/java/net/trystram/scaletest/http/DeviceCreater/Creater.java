@@ -1,6 +1,9 @@
 package net.trystram.scaletest.http.DeviceCreater;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import net.trystram.scaletest.http.HttpConfigValues;
 import net.trystram.util.CsvLogger;
 
@@ -37,6 +40,8 @@ public class Creater {
     private AtomicLong progress = new AtomicLong(0);
     private AtomicLong deviceId = new AtomicLong(0);
 
+    private Buffer deviceIds = Buffer.buffer();
+
     public Creater(String pathToConfig) {
         VertxOptions vxOptions = new VertxOptions().setBlockedThreadCheckInterval(2000000);
         vertx = Vertx.vertx(vxOptions);
@@ -56,15 +61,17 @@ public class Creater {
         );
 
         csv.setBeginTime(System.currentTimeMillis());
+        List<Future> futureList = new ArrayList<>();
 
-        Buffer deviceIds = Buffer.buffer();
+        for (long i = 0; i < devicesToCreate; i++) {
 
-       for (long i = 0; i < devicesToCreate; i++) {
+            CountDownLatch latch = new CountDownLatch(1);
 
-           Future requestFuture = Future.future();
+            Future<String> deviceFuture = Future.future();
+            Future requestFuture = Future.future();
+            futureList.add(requestFuture);
 
-           Future<String> deviceFuture = Future.future();
-           client.post(String.format("/v1/devices/%s/%s", config.getTenantId(), deviceId.incrementAndGet()))
+            client.post(String.format("/v1/devices/%s/%s", config.getTenantId(), deviceId.incrementAndGet()))
                    .putHeader("Content-Type", " application/json")
                    .putHeader("Authorization", "Bearer "+config.getPassword())
                    .send(res -> {
@@ -73,10 +80,12 @@ public class Creater {
                                deviceFuture.complete(res.result().bodyAsJsonObject().getString("id"));
                            } else {
                                log.error("Cannot create device : HTTP "+ res.result().statusCode());
+                               latch.countDown();
                                requestFuture.fail(res.cause());
                            }
                        } else {
                             log.error("HTTP request failed", res.cause());
+                            latch.countDown();
                             requestFuture.fail(res.cause());
                        }
                     });
@@ -86,25 +95,29 @@ public class Creater {
                        .putHeader("Content-Type", " application/json")
                        .putHeader("Authorization", "Bearer "+config.getPassword())
                        .sendJson(credentialJson(id.result()), res2 -> {
-                           asyncLogger();
-                           deviceIds.appendString(id.result()).appendString("\n");
+                           asyncLogger(id.result());
+                           latch.countDown();
                            requestFuture.complete();
                        });
            });
+           try {
+           latch.await(); }catch (Exception e){
+               }
+        }
 
-           CompositeFuture.join(Collections.singletonList(requestFuture));
-       }
-
-        writeIdsToFile(deviceIds, config.getCreatedIdsFile());
-        csv.saveFile();
-        startPromise.complete();
+        //CompositeFuture.join(futureList).setHandler(res -> {
+            //writeIdsToFile(deviceIds, config.getCreatedIdsFile());
+            csv.saveFile();
+            startPromise.complete();
+       // });
 
         return startPromise;
     }
 
 
-    private void asyncLogger(){
+    private void asyncLogger(String id){
         csv.log(progress.incrementAndGet());
+        deviceIds.appendString(id).appendString("\n");
     }
 
     public Future<Void> configure() {
@@ -157,6 +170,6 @@ public class Creater {
                 .put("type", "hashed-password")
                 .put("auth-id", "sensor1")
                 .put("secrets", new JsonArray()
-                        .add(new JsonObject().put("pwd-plain", password))));
+                        .add(new JsonObject().put("pwd-plain", "longerThanUsualPassword"+password))));
     }
 }
