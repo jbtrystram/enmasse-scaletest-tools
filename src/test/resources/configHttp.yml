@@ -2,7 +2,7 @@ iotProject: myapp.iot
 numberOfDevicesToCreate: 2000
 host: device-registry-enmasse-infra.192.168.1.13.nip.io
 port: 443
-authToken: 8kWBz09IXOFlzRgOKGlbsl5H7bs9pJ8uaVgVdfPz69Q
+authToken: qqylfel2WSRq3oGiRySDM3kgI2UkEDI0lcHSJO8yW7o
 csvLogFile: /tmp/http_create3.csv
 logInterval: 10
 createdIdsFile: /tmp/created_ids

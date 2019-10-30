@@ -1,5 +1,6 @@
 package net.trystram.scaletest.http.DeviceCreater;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,6 @@ public class Creater {
         );
 
         csv.setBeginTime(System.currentTimeMillis());
-        List<Future> futureList = new ArrayList<>();
 
         for (long i = 0; i < devicesToCreate; i++) {
 
@@ -69,7 +69,6 @@ public class Creater {
 
             Future<String> deviceFuture = Future.future();
             Future requestFuture = Future.future();
-            futureList.add(requestFuture);
 
             client.post(String.format("/v1/devices/%s/%s", config.getTenantId(), deviceId.incrementAndGet()))
                    .putHeader("Content-Type", " application/json")
@@ -77,39 +76,37 @@ public class Creater {
                    .send(res -> {
                        if (res.succeeded()){
                            if (res.result().statusCode() == 201) {
-                               deviceFuture.complete(res.result().bodyAsJsonObject().getString("id"));
+                               deviceFuture.complete(String.valueOf(deviceId.get()));
                            } else {
                                log.error("Cannot create device : HTTP "+ res.result().statusCode());
-                               latch.countDown();
                                requestFuture.fail(res.cause());
                            }
                        } else {
                             log.error("HTTP request failed", res.cause());
-                            latch.countDown();
                             requestFuture.fail(res.cause());
                        }
                     });
+
 
            deviceFuture.setHandler(id -> {
                client.put(String.format("/v1/credentials/%s/%s", config.getTenantId(), id.result()))
                        .putHeader("Content-Type", " application/json")
                        .putHeader("Authorization", "Bearer "+config.getPassword())
                        .sendJson(credentialJson(id.result()), res2 -> {
-                           asyncLogger(id.result());
-                           latch.countDown();
                            requestFuture.complete();
                        });
            });
-           try {
-           latch.await(); }catch (Exception e){
-               }
+
+            requestFuture.setHandler(res -> latch.countDown());
+            try {
+                latch.await();
+            } catch (Exception e){}
+            asyncLogger(String.valueOf(i));
         }
 
-        //CompositeFuture.join(futureList).setHandler(res -> {
-            //writeIdsToFile(deviceIds, config.getCreatedIdsFile());
-            csv.saveFile();
-            startPromise.complete();
-       // });
+        //writeIdsToFile(deviceIds, config.getCreatedIdsFile());
+        csv.saveFile();
+        startPromise.complete();
 
         return startPromise;
     }
