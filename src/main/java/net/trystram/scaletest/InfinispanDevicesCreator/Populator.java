@@ -61,8 +61,6 @@ public class Populator {
             return startPromise;
         }
 
-        csv.setBeginTime(System.currentTimeMillis());
-
        for (long i = 0; i < devicesToCreate; i++) {
 
            DeviceInformation deviceInfo = new DeviceInformation();
@@ -83,11 +81,11 @@ public class Populator {
            devicesCache.putIfAbsent(key, deviceInfo);
 
            csv.log(i);
+           csv.saveFile();
            //log.info(String.valueOf(i));
        }
 
-       stop();
-       csv.saveFile();
+        stop();
        startPromise.complete();
 
         return startPromise;

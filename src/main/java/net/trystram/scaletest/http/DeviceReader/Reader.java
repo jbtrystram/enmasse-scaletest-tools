@@ -53,7 +53,6 @@ public class Reader {
                 //.setLogActivity(true)
         );
 
-        csv.setBeginTime(System.currentTimeMillis());
         List<Future> futureList = new ArrayList<>();
 
         for (String id : devicesIds) {

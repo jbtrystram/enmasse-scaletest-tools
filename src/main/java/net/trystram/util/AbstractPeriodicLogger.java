@@ -3,18 +3,20 @@ package net.trystram.util;
 public abstract class AbstractPeriodicLogger {
 
     private int interval = 10;
-    private long timeMarker;
+    long timeMarker;
 
     long lastValue = 0;
+    long lastErrors=0;
 
-    public void log(long value){
+    public void log(long value, long totalErrors){
          if (intervalCheck()) {
-             write(String.valueOf(value - lastValue));
+             write(value, totalErrors);
              lastValue = value;
+             lastErrors = totalErrors;
          }
     }
 
-    public abstract void write(String value);
+    public abstract void write(long value, long errors);
 
     private boolean intervalCheck(){
         long now = System.currentTimeMillis();
@@ -28,5 +30,9 @@ public abstract class AbstractPeriodicLogger {
 
     public void setInterval(int interval) {
         this.interval = interval;
+    }
+
+    public int getInterval() {
+       return interval;
     }
 }

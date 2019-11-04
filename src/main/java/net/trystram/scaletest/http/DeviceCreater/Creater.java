@@ -1,17 +1,14 @@
 package net.trystram.scaletest.http.DeviceCreater;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import net.trystram.scaletest.http.HttpConfigValues;
+import net.trystram.util.ConsoleLogger;
 import net.trystram.util.CsvLogger;
+
+import java.util.concurrent.CountDownLatch;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -37,9 +34,11 @@ public class Creater {
 
     private final String pathToConfig;
 
+    ConsoleLogger consoleLogger;
     private CsvLogger csv;
     private AtomicLong progress = new AtomicLong(0);
     private AtomicLong deviceId = new AtomicLong(0);
+    private AtomicLong errors = new AtomicLong(0);
 
     private Buffer deviceIds = Buffer.buffer();
 
@@ -61,7 +60,7 @@ public class Creater {
                 //.setLogActivity(true)
         );
 
-        csv.setBeginTime(System.currentTimeMillis());
+        consoleLogger = new ConsoleLogger();
 
         for (long i = 0; i < devicesToCreate; i++) {
 
@@ -79,11 +78,13 @@ public class Creater {
                                deviceFuture.complete(String.valueOf(deviceId.get()));
                            } else {
                                log.error("Cannot create device : HTTP "+ res.result().statusCode());
+                               errors.incrementAndGet();
                                requestFuture.fail(res.cause());
                            }
                        } else {
                             log.error("HTTP request failed", res.cause());
-                            requestFuture.fail(res.cause());
+                           errors.incrementAndGet();
+                           requestFuture.fail(res.cause());
                        }
                     });
 
@@ -100,12 +101,11 @@ public class Creater {
             requestFuture.setHandler(res -> latch.countDown());
             try {
                 latch.await();
+                asyncLogger(String.valueOf(deviceId.get()));
             } catch (Exception e){}
-            asyncLogger(String.valueOf(i));
         }
 
         //writeIdsToFile(deviceIds, config.getCreatedIdsFile());
-        csv.saveFile();
         startPromise.complete();
 
         return startPromise;
@@ -113,7 +113,9 @@ public class Creater {
 
 
     private void asyncLogger(String id){
-        csv.log(progress.incrementAndGet());
+        csv.log(progress.incrementAndGet(), errors.get());
+        csv.saveFile();
+        consoleLogger.log(progress.get(), errors.get());
         deviceIds.appendString(id).appendString("\n");
     }
 

@@ -16,7 +16,6 @@ public class Application {
             System.exit(1);
         }
 
-
         Creater app = new Creater(args[0]);
 
         Future<Void> startPromise = app.configure().compose(config -> {
