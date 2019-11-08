@@ -34,9 +34,9 @@ public class CsvLogger extends AbstractPeriodicLogger {
         buffer.appendString(String.join(String.valueOf(delimiter),
                 time,
                 String.valueOf(value),
-                String.valueOf((value-lastValue)/getInterval()),
+                String.valueOf((value-lastValue)/(double)getInterval()),
                 String.valueOf(errors),
-                String.valueOf((errors-lastErrors)/getInterval())))
+                String.valueOf((errors-lastErrors)/(double)getInterval())))
                 .appendString("\n");
     }
 
