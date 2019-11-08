@@ -61,6 +61,7 @@ public class Creater {
         );
 
         consoleLogger = new ConsoleLogger();
+        long startTime = System.currentTimeMillis();
 
         for (long i = 0; i < devicesToCreate; i++) {
 
@@ -82,7 +83,7 @@ public class Creater {
                                requestFuture.fail(res.cause());
                            }
                        } else {
-                            log.error("HTTP request failed", res.cause());
+                           log.error("HTTP request failed", res.cause());
                            errors.incrementAndGet();
                            requestFuture.fail(res.cause());
                        }
@@ -101,8 +102,13 @@ public class Creater {
             requestFuture.setHandler(res -> latch.countDown());
             try {
                 latch.await();
-                asyncLogger(String.valueOf(deviceId.get()));
             } catch (Exception e){}
+            asyncLogger(String.valueOf(deviceId.get()));
+
+            if (System.currentTimeMillis() - startTime > config.getDurationLimit()*1000){
+                log.warn("Test duration reached, stopping.");
+                break;
+            }
         }
 
         //writeIdsToFile(deviceIds, config.getCreatedIdsFile());

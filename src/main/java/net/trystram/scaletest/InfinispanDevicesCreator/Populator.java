@@ -80,7 +80,7 @@ public class Populator {
 
            devicesCache.putIfAbsent(key, deviceInfo);
 
-           csv.log(i);
+           csv.log(i, 0);
            csv.saveFile();
            //log.info(String.valueOf(i));
        }

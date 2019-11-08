@@ -34,6 +34,7 @@ public class Reader {
 
     private CsvLogger csv;
     private AtomicLong progress = new AtomicLong(0);
+    private AtomicLong errors = new AtomicLong(0);
 
     public Reader(String pathToConfig) {
         VertxOptions vxOptions = new VertxOptions().setBlockedThreadCheckInterval(2000000);
@@ -70,11 +71,13 @@ public class Reader {
                                requestFuture.complete();
                            } else {
                                log.error("Cannot read device : HTTP "+ res.result().statusCode());
+                               errors.incrementAndGet();
                                requestFuture.fail(new HttpStatusException(res.result().statusCode()));
                            }
                        } else {
                             log.error("HTTP request failed");
                             log.error(res.cause().getMessage());
+                            errors.incrementAndGet();
                             requestFuture.fail(res.cause());
                        }
                     });
@@ -90,7 +93,7 @@ public class Reader {
 
 
     private void asyncLogger(){
-        csv.log(progress.incrementAndGet());
+        csv.log(progress.incrementAndGet(), errors.get());
     }
 
     public Future<Void> configure() {

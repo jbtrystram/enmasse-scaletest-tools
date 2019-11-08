@@ -10,12 +10,12 @@ import net.trystram.util.BaseConfigValues;
 public class HttpConfigValues extends BaseConfigValues {
 
 
-    private long numberOfDevicesToCreate;
+    private long numberOfDevicesToCreate = 1000;
     private String csvLogFile;
     private String createdIdsFile;
     private int logInterval = 10;
+    private int durationLimit;
 
-    private int port = 443;
     @JsonProperty("authToken")
     private String password;
 
@@ -49,6 +49,19 @@ public class HttpConfigValues extends BaseConfigValues {
 
     public void setLogInterval(int logInterval) {
         this.logInterval = logInterval;
+    }
+
+    public int getDurationLimit() {
+        return durationLimit;
+    }
+
+    public void setDurationLimit(int durationLimit) {
+        this.durationLimit = durationLimit;
+    }
+
+    @Override
+    public int getPort() {
+        return (super.getPort() == 0)? 443 : super.getPort();
     }
 
     public String verify(){
