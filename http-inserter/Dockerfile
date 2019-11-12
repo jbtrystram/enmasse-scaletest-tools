@@ -5,7 +5,7 @@ ARG maven_version
 ARG commit
 ENV VERSION=${version} COMMIT=${commit} MAVEN_VERSION=${maven_version}
 
-ADD target/enmasse-scaletest-http-inserter-${MAVEN_VERSION}.jar /enmasse-scaletest-http-inserter.jar
+ADD target/${project.build.finalName}.jar /enmasse-scaletest-http-inserter.jar
 
 ENV JAVA_LAUNCH_PROFILE=openjdk-11
-CMD ["/opt/run-java/launch_java.sh", "/enmasse-scaletest-http-inserter.jar"]
+CMD ["/opt/run-java/launch_java.sh", "/enmasse-scaletest-http-inserter.jar", "/opt/scaletest/config.yml"]

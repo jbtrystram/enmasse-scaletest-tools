@@ -4,13 +4,14 @@ package net.trystram.scaletest.util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
-import net.trystram.scaletest.util.BaseConfigValues;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpConfigValues extends BaseConfigValues {
 
 
     private long numberOfDevicesToCreate = 1000;
+    private String deviceIdPrefix = "";
+
     private String csvLogFile;
     private String createdIdsFile;
     private int logInterval = 10;
@@ -25,6 +26,14 @@ public class HttpConfigValues extends BaseConfigValues {
 
     public void setNumberOfDevicesToCreate(long numberOfDevicesToCreate) {
         this.numberOfDevicesToCreate = numberOfDevicesToCreate;
+    }
+
+    public String getDeviceIdPrefix() {
+        return deviceIdPrefix;
+    }
+
+    public void setDeviceIdPrefix(String deviceIdPrefix) {
+        this.deviceIdPrefix = deviceIdPrefix;
     }
 
     public String getCsvLogFile() {

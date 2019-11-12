@@ -1,9 +1,10 @@
-iotProject: myapp3.iot
+iotProject: myapp.iot
 numberOfDevicesToCreate: 10000
+devicesIdPrefix: a
 durationLimit: 900
-host: yourDeviceRegistryHost
+host: device-registry-enmasse-infra.apps.jtrystra.rhmw-integrations.net
 port: 443
-authToken: Kubernetes token (oc whoami -t)
-csvLogFile: /tmp/http_test_4.csv
+authToken: Hv9FnujqiRwg6xUhqUOs6wucYXs8IZaMu767kSTXDJI
+csvLogFile: /tmp/http_test_0.csv
 logInterval: 10
 createdIdsFile: /tmp/created_ids

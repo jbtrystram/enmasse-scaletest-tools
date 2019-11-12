@@ -70,7 +70,8 @@ public class Creater {
             Future<String> deviceFuture = Future.future();
             Future requestFuture = Future.future();
 
-            client.post(String.format("/v1/devices/%s/%s", config.getTenantId(), deviceId.incrementAndGet()))
+            client.post(String.format("/v1/devices/%s/%s", config.getTenantId(),
+                                        config.getDeviceIdPrefix().concat(String.valueOf(deviceId.incrementAndGet()))))
                    .putHeader("Content-Type", " application/json")
                    .putHeader("Authorization", "Bearer "+config.getPassword())
                    .send(res -> {

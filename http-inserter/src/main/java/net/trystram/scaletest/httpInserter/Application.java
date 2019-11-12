@@ -9,7 +9,7 @@ public class Application {
     private static final Logger log = LoggerFactory.getLogger(
             Application.class);
 
-    //TODO : make config optional 
+    //TODO : make config optional
 
     public static void main(String args[]) {
 

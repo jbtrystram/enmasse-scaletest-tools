@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scale-test-http-inserter
+spec:
+  template:
+    spec:
+      containers:
+        - name: scale-test-http-inserter
+          image: docker.io/jbtrystram/enmasse-scaletest-http-inserter
+      restartPolicy: Never
+  backoffLimit: 1
+  volumeMounts:
+    - mountPath: /opt/scaletest
+      name: scale-test-http-inserter-configuration
+  volumes:
+    - name: scale-test-http-inserter-configuration
+      configMap:
+        defaultMode: 420
+        name: scale-test-http-inserter-configuration
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: scale-test-http-inserter-configuration
+data:
+  config.yml: |
+    iotProject: myapp.iot
+    numberOfDevicesToCreate: 10000
+    devicesIdPrefix: a
+    durationLimit: 900
+    host: device-registry-enmasse-infra.apps.jtrystra.rhmw-integrations.net
+    port: 443
+    authToken: Hv9FnujqiRwg6xUhqUOs6wucYXs8IZaMu767kSTXDJI
+    csvLogFile: /tmp/http_test_0.csv
+    logInterval: 10
+    createdIdsFile: /tmp/created_ids
