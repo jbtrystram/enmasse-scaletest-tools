@@ -54,7 +54,7 @@ public class CsvLogger extends AbstractPeriodicLogger {
         String newfilename = filename;
         String barefilename = getFilenameWithoutExtension();
         while(vertx.fileSystem().existsBlocking(newfilename)){
-            newfilename = barefilename.concat(String.valueOf(count)).concat(".csv");
+            newfilename = barefilename.concat(".").concat(String.valueOf(count)).concat(".csv");
             count++;
         }
 
