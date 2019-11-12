@@ -8,16 +8,16 @@ spec:
       containers:
         - name: scale-test-http-inserter
           image: docker.io/jbtrystram/enmasse-scaletest-http-inserter
+          volumeMounts:
+            - mountPath: /opt/scaletest
+              name: scale-test-http-inserter-configuration
+      volumes:
+        - name: scale-test-http-inserter-configuration
+          configMap:
+            defaultMode: 420
+            name: scale-test-http-inserter-configuration
       restartPolicy: Never
   backoffLimit: 1
-  volumeMounts:
-    - mountPath: /opt/scaletest
-      name: scale-test-http-inserter-configuration
-  volumes:
-    - name: scale-test-http-inserter-configuration
-      configMap:
-        defaultMode: 420
-        name: scale-test-http-inserter-configuration
 
 ---
 
