@@ -7,66 +7,86 @@
 
     <groupId>net.trystram</groupId>
     <artifactId>enmasse-scaletest-tools</artifactId>
+  <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
+  <modules>
+    <module>http-inserter</module>
+    <module>util</module>
+    <module>http-reader</module>
+    <module>hotrod-inserter</module>
+  </modules>
 
   <properties>
     <enmasse.version>0.30-SNAPSHOT</enmasse.version>
     <vertx.version>3.7.1</vertx.version>
     <infinispan.version>9.4.15.Final</infinispan.version>
     <logback.version>1.2.3</logback.version>
+
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-core</artifactId>
-      <version>${vertx.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-config-yaml</artifactId>
-      <version>${vertx.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-config</artifactId>
-      <version>${vertx.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.enmasse</groupId>
-      <artifactId>iot-service-base</artifactId>
-      <version>${enmasse.version}</version>
-    </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-core</artifactId>
+        <version>${vertx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-config-yaml</artifactId>
+        <version>${vertx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-config</artifactId>
+        <version>${vertx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.enmasse</groupId>
+        <artifactId>iot-service-base</artifactId>
+        <version>${enmasse.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-query-dsl</artifactId>
-      <version>${infinispan.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-client-hotrod</artifactId>
-      <optional>true</optional>
-      <version>${infinispan.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-core</artifactId>
-      <optional>true</optional>
-      <version>${infinispan.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-remote-query-client</artifactId>
-      <optional>true</optional>
-      <version>${infinispan.version}</version>
-    </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-query-dsl</artifactId>
+        <version>${infinispan.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-client-hotrod</artifactId>
+        <optional>true</optional>
+        <version>${infinispan.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-core</artifactId>
+        <optional>true</optional>
+        <version>${infinispan.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-remote-query-client</artifactId>
+        <optional>true</optional>
+        <version>${infinispan.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
-    </dependency>
-  </dependencies>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.trystram</groupId>
+        <artifactId>enmasse-scaletest-util</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <scope>compile</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
 </project>

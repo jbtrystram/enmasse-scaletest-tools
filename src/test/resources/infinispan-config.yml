@@ -1,9 +1,0 @@
-iotProject: myapp.iot/2019-09-17T14:03:14Z
-numberOfDevicesToCreate: 2000
-host: 172.17.0.16
-username: app
-password: test12
-saslServerName: hotrod
-saslRealm: ApplicationRealm
-csvLogFile: /tmp/hotrod_populator.csv
-logInterval: 10

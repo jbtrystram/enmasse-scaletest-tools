@@ -1,9 +1,0 @@
-iotProject: myapp.iot
-numberOfDevicesToCreate: 10000
-durationLimit: 900
-host: device-registry-enmasse-infra.apps.your-oc-cluster
-port: 443
-authToken: some token (oc whoami -t)
-csvLogFile: /tmp/http_test_3.csv
-logInterval: 10
-createdIdsFile: /tmp/created_ids

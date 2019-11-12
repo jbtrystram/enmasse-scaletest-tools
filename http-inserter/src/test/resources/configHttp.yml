@@ -1,0 +1,9 @@
+iotProject: myapp3.iot
+numberOfDevicesToCreate: 10000
+durationLimit: 900
+host: yourDeviceRegistryHost
+port: 443
+authToken: Kubernetes token (oc whoami -t)
+csvLogFile: /tmp/http_test_4.csv
+logInterval: 10
+createdIdsFile: /tmp/created_ids
