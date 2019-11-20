@@ -68,12 +68,12 @@ public class Creater {
             CountDownLatch latch = new CountDownLatch(1);
 
             Future<String> deviceFuture = Future.future();
-            Future requestFuture = Future.future();
+            Future<?> requestFuture = Future.future();
 
             client.post(String.format("/v1/devices/%s/%s", config.getTenantId(),
                                         config.getDeviceIdPrefix().concat(String.valueOf(deviceId.incrementAndGet()))))
                    .putHeader("Content-Type", " application/json")
-                   .putHeader("Authorization", "Bearer "+config.getPassword())
+                   .putHeader("Authorization", "Bearer "+config.getAuthToken())
                    .send(res -> {
                        if (res.succeeded()){
                            if (res.result().statusCode() == 201) {
@@ -94,7 +94,7 @@ public class Creater {
            deviceFuture.setHandler(id -> {
                client.put(String.format("/v1/credentials/%s/%s", config.getTenantId(), id.result()))
                        .putHeader("Content-Type", " application/json")
-                       .putHeader("Authorization", "Bearer "+config.getPassword())
+                       .putHeader("Authorization", "Bearer "+config.getAuthToken())
                        .sendJson(credentialJson(id.result()), res2 -> {
                            requestFuture.complete();
                        });
@@ -146,10 +146,10 @@ public class Creater {
                 HttpConfigValues config = json.result().mapTo(HttpConfigValues.class);
 
                 devicesToCreate = config.getNumberOfDevicesToCreate();
-                String verif = config.verify();
-                if (verif != null){
-                    log.error(verif);
-                    configured.fail(new IllegalArgumentException(verif));
+                String verify = config.verify();
+                if (verify != null){
+                    log.error(verify);
+                    configured.fail(new IllegalArgumentException(verify));
                 } else {
                     this.config = config;
                     csv = new CsvLogger(vertx, config.getCsvLogFile());
@@ -161,6 +161,7 @@ public class Creater {
         return configured;
     }
 
+    @SuppressWarnings("unused")
     private void writeIdsToFile(Buffer buffer, String filename){
 
         if (filename == null){

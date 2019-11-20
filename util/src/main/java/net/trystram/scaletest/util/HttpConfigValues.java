@@ -2,7 +2,11 @@ package net.trystram.scaletest.util;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -17,8 +21,15 @@ public class HttpConfigValues extends BaseConfigValues {
     private int logInterval = 10;
     private int durationLimit;
 
-    @JsonProperty("authToken")
-    private String password;
+    private String authToken;
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
 
     public long getNumberOfDevicesToCreate() {
         return numberOfDevicesToCreate;
@@ -70,10 +81,10 @@ public class HttpConfigValues extends BaseConfigValues {
 
     @Override
     public int getPort() {
-        return (super.getPort() == 0)? 443 : super.getPort();
+        return (super.getPort() == 0) ? 443 : super.getPort();
     }
 
-    public String verify(){
+    public String verify() {
 
         ArrayList<String> missingValues = new ArrayList<>();
 
@@ -83,11 +94,15 @@ public class HttpConfigValues extends BaseConfigValues {
         if (this.getHost() == null) {
             missingValues.add("host");
         }
-        if (this.getPassword() == null) {
-            missingValues.add("authToken");
+        if (this.authToken == null) {
+            try {
+                this.authToken = Files.readString(Paths.get("/run/secrets/kubernetes.io/serviceaccount/token"), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        if (missingValues.size() != 0){
+        if (missingValues.size() != 0) {
             final String message = "Missing configuration value(s): ";
             return message + String.join(", ", missingValues);
         } else {

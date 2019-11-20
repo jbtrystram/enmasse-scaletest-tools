@@ -13,7 +13,6 @@ public class BaseConfigValues {
     private String username;
     private String password;
 
-
     public String getTenantId() {
         return tenantId;
     }
