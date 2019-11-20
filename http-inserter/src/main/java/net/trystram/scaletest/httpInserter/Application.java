@@ -1,6 +1,9 @@
 package net.trystram.scaletest.httpInserter;
 
 import io.vertx.core.Future;
+
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,16 +12,11 @@ public class Application {
     private static final Logger log = LoggerFactory.getLogger(
             Application.class);
 
-    //TODO : make config optional
-
     public static void main(String args[]) {
 
-        if (args.length < 1){
-            log.error("The path to the config file must be given as the 1st argument.");
-            System.exit(1);
-        }
+        Optional<String> configPath = args.length > 0 ? Optional.ofNullable(args[0]) : Optional.empty();
 
-        Creater app = new Creater(args[0]);
+        Creater app = new Creater(configPath.orElse("/etc/config/config.yaml"));
 
         Future<Void> startPromise = app.configure().compose(config -> {
                     Future<Void> runFuture = Future.future();
