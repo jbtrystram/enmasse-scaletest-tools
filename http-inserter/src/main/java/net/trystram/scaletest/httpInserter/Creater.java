@@ -50,6 +50,9 @@ public class Creater {
                 .addPathSegment("credentials")
                 .addPathSegment(config.getTenantId())
                 .build();
+
+        System.out.println("Register URL: " + this.registerUrl);
+        System.out.println("Credentials URL: " + this.credentialsUrl);
     }
 
 
