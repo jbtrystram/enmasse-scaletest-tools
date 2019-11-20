@@ -1,0 +1,30 @@
+---
+kind: BuildConfig
+apiVersion: v1
+metadata:
+  name: http-inserter
+spec:
+  triggers: 
+    - type: ImageChange
+    - type: ConfigChange
+  source: 
+    type: Git
+    git:
+      uri: https://github.com/ctron/enmasse-scaletest-tools
+      ref: master
+  strategy: 
+    type: source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: java:11
+      env:
+      - name: MAVEN_ARGS_APPEND
+        value: -B -pl net.trystram:enmasse-scaletest-http-inserter --also-make
+      - name: ARTIFACT_DIR
+        value: http-inserter/target
+  output:
+    to:
+      kind: ImageStreamTag
+      name: http-inserter:latest

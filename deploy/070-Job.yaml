@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: http-inserter
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      serviceAccount: tester
+      containers:
+        - name: main
+          image: http-inserter:latest
+          command: ["java"]
+          args:
+           - "-jar"
+           - "/deployments/enmasse-scaletest-http-inserter-1.0.0-SNAPSHOT.jar"
+          env:
+            - name: IOT_PROJECT
+              value: iot
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: REGISTRY_URL
+              value: https://iot-device-registry.enmasse-infra.svc:8443/v1
+            - name: INSECURE_TLS
+              value: "true"
+          resources:
+            limits:
+              cpu: 2
+              memory: 256Mi
+      restartPolicy: Never
