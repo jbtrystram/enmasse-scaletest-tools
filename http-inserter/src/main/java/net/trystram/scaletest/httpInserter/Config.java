@@ -18,6 +18,7 @@ public class Config {
     private String authToken;
     private HttpUrl registryUrl;
     private boolean insecureTls;
+    private boolean onlyRegister;
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -67,6 +68,14 @@ public class Config {
         return insecureTls;
     }
 
+    public void setOnlyRegister(boolean onlyRegister) {
+        this.onlyRegister = onlyRegister;
+    }
+
+    public boolean isOnlyRegister() {
+        return onlyRegister;
+    }
+
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
@@ -96,6 +105,7 @@ public class Config {
                 }));
 
         Environment.consumeAs("INSECURE_TLS", Boolean::parseBoolean, result::setInsecureTls);
+        Environment.consumeAs("ONLY_REGISTER", Boolean::parseBoolean, result::setOnlyRegister);
 
         return result;
     }

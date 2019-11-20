@@ -94,18 +94,20 @@ public class Creater {
             }
         }
 
-        final Request credentials = newRequest()
-                .url(this.credentialsUrl
-                        .newBuilder()
-                        .addPathSegment(deviceId)
-                        .build())
-                .put(RequestBody.create(credentialJson(i), JSON))
-                .build();
+        if (!config.isOnlyRegister()) {
+            final Request credentials = newRequest()
+                    .url(this.credentialsUrl
+                            .newBuilder()
+                            .addPathSegment(deviceId)
+                            .build())
+                    .put(RequestBody.create(credentialJson(i), JSON))
+                    .build();
 
-        try (Response response = client.newCall(credentials).execute()) {
-            if (!response.isSuccessful()) {
-                handleCredentialsFailure(response);
-                return;
+            try (Response response = client.newCall(credentials).execute()) {
+                if (!response.isSuccessful()) {
+                    handleCredentialsFailure(response);
+                    return;
+                }
             }
         }
 
