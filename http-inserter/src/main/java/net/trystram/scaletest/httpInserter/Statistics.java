@@ -52,7 +52,7 @@ public class Statistics implements AutoCloseable {
 
         double rate = ((double) diff) / ((double) period.toMillis()) * 1000.0;
 
-        this.out.format("\"%s\";%s;%s;%.2f;%s%n",
+        this.out.format("\"%s\";%s;%s;%.2f;%s;%s%n",
                 Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
                 diff,
                 currentSuccess,
