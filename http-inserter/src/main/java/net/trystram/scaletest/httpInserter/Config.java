@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import io.glutamate.lang.Environment;
 import io.glutamate.lang.Exceptions;
 import okhttp3.HttpUrl;
@@ -88,7 +87,15 @@ public class Config {
         System.out.format("Using authToken: '%s'%n", result.getAuthToken());
 
         result.setDeviceIdPrefix(Environment.get("DEVICE_ID_PREFIX").orElse(""));
-        result.setTenantId(Environment.getRequired("TENANT_ID"));
+        result.setTenantId(Environment.get("TENANT_ID")
+                .or(() -> {
+                    return Environment.get("NAMESPACE")
+                            .flatMap(ns -> Environment.get("IOT_PROJECT")
+                                    .map(prj -> ns + "." + prj));
+                })
+                .orElseThrow(
+                        () -> new IllegalStateException("Missing tenant information. Need 'TENANT_ID' or 'IOT_PROJECT' and 'NAMESPACE'")));
+
         Environment.consumeAs("MAX_DEVICES", Long::parseLong, result::setDevicesToCreate);
 
         result.setRegistryUrl(Environment.get("REGISTRY_URL")
