@@ -76,6 +76,8 @@ public class Config {
                                 Paths.get("/run/secrets/kubernetes.io/serviceaccount/token"),
                                 StandardCharsets.UTF_8))));
 
+        System.out.format("Using authToken: '%s'%n", result.getAuthToken());
+
         result.setDeviceIdPrefix(Environment.get("DEVICE_ID_PREFIX").orElse(""));
         result.setTenantId(Environment.getRequired("TENANT_ID"));
         Environment.consumeAs("MAX_DEVICES", Long::parseLong, result::setDevicesToCreate);
