@@ -1,7 +1,5 @@
 package net.trystram.scaletest.httpInserter;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,7 +135,7 @@ public class Creater {
         result.put("auth-id", "device-" + i);
 
         final Map<String, String> secret = new HashMap<>(1);
-        secret.put("pwd-plain", Base64.getEncoder().encodeToString(("longerThanUsualPassword-" + i).getBytes(StandardCharsets.UTF_8)));
+        secret.put("pwd-plain", "longerThanUsualPassword-" + i);
         result.put("secrets", Collections.singletonList(secret));
 
         return Exceptions.wrap(() -> mapper.writeValueAsString(Collections.singletonList(result)));
