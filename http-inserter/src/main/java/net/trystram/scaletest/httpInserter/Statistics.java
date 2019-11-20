@@ -42,15 +42,15 @@ public class Statistics implements AutoCloseable {
 
     private void tick() {
 
-        long currentSuccess = this.success.get();
-        long diff = currentSuccess - this.lastSuccess;
+        final long currentSuccess = this.success.get();
+        final long diff = currentSuccess - this.lastSuccess;
         this.lastSuccess = currentSuccess;
 
-        Instant now = Instant.now();
-        Duration period = Duration.between(this.last, now);
+        final Instant now = Instant.now();
+        final Duration period = Duration.between(this.last, now);
         this.last = now;
 
-        double rate = ((double) diff) / ((double) period.toMillis()) * 1000.0;
+        final double rate = ((double) diff) / ((double) period.toMillis()) * 1000.0;
 
         this.out.format("\"%s\";%s;%s;%.2f;%s;%s%n",
                 Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
@@ -58,8 +58,7 @@ public class Statistics implements AutoCloseable {
                 currentSuccess,
                 rate,
                 this.errorRegister.get(),
-                this.errorCredentials.get()
-                );
+                this.errorCredentials.get());
         this.out.flush();
     }
 

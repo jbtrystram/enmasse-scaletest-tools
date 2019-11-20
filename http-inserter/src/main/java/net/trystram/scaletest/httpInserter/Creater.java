@@ -101,7 +101,7 @@ public class Creater {
                         .newBuilder()
                         .addPathSegment(deviceId)
                         .build())
-                .post(RequestBody.create(credentialJson(i), JSON))
+                .put(RequestBody.create(credentialJson(i), JSON))
                 .build();
 
         try (Response response = client.newCall(credentials).execute()) {
