@@ -26,7 +26,7 @@ public class Statistics implements AutoCloseable {
         this.out = out;
         this.executor = Executors.newScheduledThreadPool(1);
         this.executor.scheduleAtFixedRate(this::tick, 1, 1, TimeUnit.SECONDS);
-        this.out.println("Time;Created;Rate;Errors");
+        this.out.println("Time;Total;Created;Rate;Errors");
     }
 
     public Statistics(final OutputStream out) {
@@ -51,8 +51,9 @@ public class Statistics implements AutoCloseable {
 
         double rate = ((double) diff) / ((double) period.getSeconds());
 
-        this.out.format("\"%s\";%s;%.2f;%s%n",
+        this.out.format("\"%s\";%s;%s;%.2f;%s%n",
                 Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
+                diff,
                 currentSuccess,
                 rate,
                 this.error.get());
