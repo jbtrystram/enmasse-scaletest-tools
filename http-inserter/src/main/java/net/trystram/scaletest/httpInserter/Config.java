@@ -17,6 +17,7 @@ public class Config {
     private String tenantId;
     private String authToken;
     private HttpUrl registryUrl;
+    private boolean insecureTls;
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -58,6 +59,14 @@ public class Config {
         return registryUrl;
     }
 
+    public void setInsecureTls(boolean disableTls) {
+        this.insecureTls = disableTls;
+    }
+
+    public boolean isInsecureTls() {
+        return insecureTls;
+    }
+
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
@@ -83,6 +92,8 @@ public class Config {
 
                     return builder.build();
                 }));
+
+        Environment.consumeAs("INSECURE_TLS", Boolean::parseBoolean, result::setInsecureTls);
 
         return result;
     }

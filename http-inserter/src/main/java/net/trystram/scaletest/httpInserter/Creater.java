@@ -31,8 +31,13 @@ public class Creater {
     public Creater(Config config) {
         this.config = config;
         this.stats = new Statistics(System.out);
-        this.client = new OkHttpClient.Builder()
-                .build();
+        var builder = new OkHttpClient.Builder();
+
+        if (config.isInsecureTls()) {
+            Tls.makeOkHttpInsecure(builder);
+        }
+
+        this.client = builder.build();
 
         final HttpUrl base = config.getRegistryUrl();
 
