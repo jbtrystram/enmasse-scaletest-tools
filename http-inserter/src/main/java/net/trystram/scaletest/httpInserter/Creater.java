@@ -110,15 +110,14 @@ public class Creater {
 
     private void handleError(final Exception e) {
         log.warn("Failed to process", e);
-        this.stats.error();
     }
 
     private void handleCredentialsFailure(final Response response) {
-        this.stats.error();
+        this.stats.errorCredentials();
     }
 
     private void handleRegistrationFailure(final Response response) {
-        this.stats.error();
+        this.stats.errorRegister();
     }
 
     private void handleSuccess() {

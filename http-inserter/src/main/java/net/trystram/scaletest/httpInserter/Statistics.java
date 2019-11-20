@@ -14,7 +14,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Statistics implements AutoCloseable {
 
     private AtomicLong success = new AtomicLong();
-    private AtomicLong error = new AtomicLong();
+    private AtomicLong errorRegister = new AtomicLong();
+    private AtomicLong errorCredentials = new AtomicLong();
 
     private ScheduledExecutorService executor;
     private PrintStream out;
@@ -26,7 +27,7 @@ public class Statistics implements AutoCloseable {
         this.out = out;
         this.executor = Executors.newScheduledThreadPool(1);
         this.executor.scheduleAtFixedRate(this::tick, 1, 1, TimeUnit.SECONDS);
-        this.out.println("Time;Total;Created;Rate;Errors");
+        this.out.println("Time;Total;Created;Rate;ErrorsR;ErrorsC");
     }
 
     public Statistics(final OutputStream out) {
@@ -56,7 +57,9 @@ public class Statistics implements AutoCloseable {
                 diff,
                 currentSuccess,
                 rate,
-                this.error.get());
+                this.errorRegister.get(),
+                this.errorCredentials.get()
+                );
         this.out.flush();
     }
 
@@ -64,8 +67,12 @@ public class Statistics implements AutoCloseable {
         success.incrementAndGet();
     }
 
-    public void error() {
-        error.incrementAndGet();
+    public void errorRegister() {
+        errorRegister.incrementAndGet();
+    }
+
+    public void errorCredentials() {
+        errorCredentials.incrementAndGet();
     }
 
 }
