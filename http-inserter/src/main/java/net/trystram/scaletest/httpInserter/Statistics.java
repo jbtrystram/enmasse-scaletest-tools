@@ -49,7 +49,7 @@ public class Statistics implements AutoCloseable {
         Duration period = Duration.between(this.last, now);
         this.last = now;
 
-        double rate = ((double) diff) / ((double) period.getSeconds());
+        double rate = ((double) diff) / ((double) period.toMillis()) * 1000.0;
 
         this.out.format("\"%s\";%s;%s;%.2f;%s%n",
                 Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
