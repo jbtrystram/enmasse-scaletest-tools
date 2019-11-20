@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.glutamate.lang.Exceptions;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -53,6 +54,7 @@ public class Creater {
 
         System.out.println("Register URL: " + this.registerUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
+        System.out.println("Credential Example JSON: " + credentialJson(0));
     }
 
 
@@ -127,7 +129,7 @@ public class Creater {
         this.stats.success();
     }
 
-    private String credentialJson(long i) throws Exception {
+    private String credentialJson(long i) {
         final Map<String, Object> result = new HashMap<>(3);
         result.put("type", "hashed-password");
         result.put("auth-id", "device-" + i);
@@ -136,6 +138,6 @@ public class Creater {
         secret.put("pwd-plain", "longerThanUsualPassword-" + i);
         result.put("secrets", Collections.singletonList(secret));
 
-        return mapper.writeValueAsString(Collections.singletonList(result));
+        return Exceptions.wrap(() -> mapper.writeValueAsString(Collections.singletonList(result)));
     }
 }
