@@ -1,11 +1,13 @@
 package net.trystram.scaletest.httpInserter;
 
+import static java.time.Instant.now;
+import static java.time.ZoneOffset.UTC;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,7 +52,7 @@ public class Statistics implements AutoCloseable {
             final long diff = currentSuccess - this.lastSuccess;
             this.lastSuccess = currentSuccess;
 
-            final Instant now = Instant.now();
+            final Instant now = now();
             final Duration period = Duration.between(this.last, now);
             this.last = now;
 
@@ -58,15 +60,15 @@ public class Statistics implements AutoCloseable {
 
             final Long avgReg = this.timeRegister > 0 ? this.timeRegister / diff : null;
             final Long avgCred = this.timeCredentials > 0 ? this.timeCredentials / diff : null;
-            timeRegister = 0L;
-            timeCredentials = 0L;
+            this.timeRegister = 0L;
+            this.timeCredentials = 0L;
 
             this.out.format("\"%s\";%s;%s;%.2f;%s;%s;%s;%s%n",
-                    Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
+                    now().atZone(UTC).format(ISO_DATE_TIME),
                     diff,
                     currentSuccess,
                     rate,
-                    errorRegister, errorCredentials,
+                    this.errorRegister, this.errorCredentials,
                     avgReg, avgCred);
             this.out.flush();
         } catch (Exception e) {
@@ -75,17 +77,17 @@ public class Statistics implements AutoCloseable {
     }
 
     public synchronized void success(final Duration register, final Optional<Duration> credentials) {
-        success++;
-        timeRegister += register.toMillis();
-        timeCredentials += register.toMillis();
+        this.success++;
+        this.timeRegister += register.toMillis();
+        this.timeCredentials += register.toMillis();
     }
 
     public synchronized void errorRegister() {
-        errorRegister++;
+        this.errorRegister++;
     }
 
     public synchronized void errorCredentials() {
-        errorCredentials++;
+        this.errorCredentials++;
     }
 
 }
