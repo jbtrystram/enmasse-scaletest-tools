@@ -79,7 +79,9 @@ public class Statistics implements AutoCloseable {
     public synchronized void success(final Duration register, final Optional<Duration> credentials) {
         this.success++;
         this.timeRegister += register.toMillis();
-        this.timeCredentials += register.toMillis();
+        credentials.ifPresent(c -> {
+            this.timeCredentials += c.toMillis();
+        });
     }
 
     public synchronized void errorRegister() {
