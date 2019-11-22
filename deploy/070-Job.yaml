@@ -4,6 +4,7 @@ metadata:
   name: http-inserter
 spec:
   backoffLimit: 1
+  parallelism: 5
   template:
     spec:
       serviceAccount: tester
@@ -17,6 +18,10 @@ spec:
           env:
             - name: IOT_PROJECT
               value: iot
+            - name: DEVICE_ID_PREFIX
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
@@ -25,8 +30,9 @@ spec:
               value: https://iot-device-registry.enmasse-infra.svc:8443/v1
             - name: INSECURE_TLS
               value: "true"
+            - name: ONLY_REGISTER
+              value: "false"
           resources:
             limits:
-              cpu: 2
               memory: 256Mi
       restartPolicy: Never
