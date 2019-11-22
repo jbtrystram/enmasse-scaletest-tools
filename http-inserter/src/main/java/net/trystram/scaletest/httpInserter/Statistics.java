@@ -45,30 +45,33 @@ public class Statistics implements AutoCloseable {
 
     private synchronized void tick() {
 
-        final long currentSuccess = this.success;
-        final long diff = currentSuccess - this.lastSuccess;
-        this.lastSuccess = currentSuccess;
+        try {
+            final long currentSuccess = this.success;
+            final long diff = currentSuccess - this.lastSuccess;
+            this.lastSuccess = currentSuccess;
 
-        final Instant now = Instant.now();
-        final Duration period = Duration.between(this.last, now);
-        this.last = now;
+            final Instant now = Instant.now();
+            final Duration period = Duration.between(this.last, now);
+            this.last = now;
 
-        final double rate = ((double) diff) / ((double) period.toMillis()) * 1000.0;
+            final double rate = ((double) diff) / ((double) period.toMillis()) * 1000.0;
 
-        final Long avgReg = this.timeRegister > 0 ? this.timeRegister / diff : null;
-        final Long avgCred = this.timeCredentials > 0 ? this.timeCredentials / diff : null;
-        timeRegister = 0L;
-        timeCredentials = 0L;
+            final Long avgReg = this.timeRegister > 0 ? this.timeRegister / diff : null;
+            final Long avgCred = this.timeCredentials > 0 ? this.timeCredentials / diff : null;
+            timeRegister = 0L;
+            timeCredentials = 0L;
 
-        this.out.format("\"%s\";%s;%s;%.2f;%s;%s;%.0f;%.0f%n",
-                Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
-                diff,
-                currentSuccess,
-                rate,
-                errorRegister, errorCredentials,
-                avgReg, avgCred
-                );
-        this.out.flush();
+            this.out.format("\"%s\";%s;%s;%.2f;%s;%s;%.0f;%.0f%n",
+                    Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
+                    diff,
+                    currentSuccess,
+                    rate,
+                    errorRegister, errorCredentials,
+                    avgReg, avgCred);
+            this.out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public synchronized void success(final Duration register, final Optional<Duration> credentials) {
