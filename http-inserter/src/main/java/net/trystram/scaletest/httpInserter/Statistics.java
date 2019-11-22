@@ -61,7 +61,7 @@ public class Statistics implements AutoCloseable {
             timeRegister = 0L;
             timeCredentials = 0L;
 
-            this.out.format("\"%s\";%s;%s;%.2f;%s;%s;%.0f;%.0f%n",
+            this.out.format("\"%s\";%s;%s;%.2f;%s;%s;%s;%s%n",
                     Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
                     diff,
                     currentSuccess,
