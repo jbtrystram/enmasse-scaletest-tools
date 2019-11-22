@@ -1,8 +1,12 @@
 package net.trystram.scaletest.httpInserter;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +35,7 @@ public class Creater {
 
     public Creater(Config config) {
         this.config = config;
-        this.stats = new Statistics(System.out);
+        this.stats = new Statistics(System.out, Duration.ofSeconds(10));
         var builder = new OkHttpClient.Builder();
 
         if (config.isInsecureTls()) {
@@ -79,6 +83,7 @@ public class Creater {
 
         final String deviceId = this.config.getDeviceIdPrefix() + Long.toString(i);
 
+        final Instant start = Instant.now();
         final Request register = newRequest()
                 .url(this.registerUrl
                         .newBuilder()
@@ -87,13 +92,14 @@ public class Creater {
                 .post(RequestBody.create("{}", JSON))
                 .build();
 
-        try (Response response = client.newCall(register).execute()) {
+        try (Response response = this.client.newCall(register).execute()) {
             if (!response.isSuccessful()) {
                 handleRegistrationFailure(response);
                 return;
             }
         }
 
+        final Instant endReg = Instant.now();
         if (!config.isOnlyRegister()) {
             final Request credentials = newRequest()
                     .url(this.credentialsUrl
@@ -110,8 +116,11 @@ public class Creater {
                 }
             }
         }
+        final Instant end = Instant.now();
 
-        handleSuccess();
+        handleSuccess(
+                Duration.between(start, endReg),
+                this.config.isOnlyRegister() ? Optional.empty() : Optional.of(Duration.between(endReg, end)));
 
     }
 
@@ -127,8 +136,8 @@ public class Creater {
         this.stats.errorRegister();
     }
 
-    private void handleSuccess() {
-        this.stats.success();
+    private void handleSuccess(final Duration r, final Optional<Duration> c) {
+        this.stats.success(r, c);
     }
 
     private String credentialJson(long i) {
