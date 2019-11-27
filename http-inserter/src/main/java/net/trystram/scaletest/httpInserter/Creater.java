@@ -27,6 +27,7 @@ public class Creater {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final Config config;
+    private final boolean plain;
     private final Statistics stats;
 
     private OkHttpClient client;
@@ -35,6 +36,7 @@ public class Creater {
 
     public Creater(Config config) {
         this.config = config;
+        this.plain = config.isPlainPasswords();
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));
         var builder = new OkHttpClient.Builder();
 
@@ -145,10 +147,15 @@ public class Creater {
         result.put("type", "hashed-password");
         result.put("auth-id", "device-" + i);
 
-        final Map<String, String> secret = new HashMap<>(1);
-        secret.put("pwd-plain", "longerThanUsualPassword-" + i);
+        final Map<String, String> secret = new HashMap<>(2);
+        if ( this.plain ) {
+            secret.put("pwd-plain", "longerThanUsualPassword-" + i);
+        } else {
+            secret.put("pwd-hash", "$2y$12$JELemetlJuc.6ZgQkCn5X..7UEPQm5iQV23lgno7/2sEKY2i.mPmS");
+            secret.put("hash-function", "bcrypt");
+        }
         result.put("secrets", Collections.singletonList(secret));
 
-        return Exceptions.wrap(() -> mapper.writeValueAsString(Collections.singletonList(result)));
+        return Exceptions.wrap(() -> this.mapper.writeValueAsString(Collections.singletonList(result)));
     }
 }

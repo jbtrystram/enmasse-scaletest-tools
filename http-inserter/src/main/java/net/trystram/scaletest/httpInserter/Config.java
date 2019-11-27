@@ -18,6 +18,7 @@ public class Config {
     private HttpUrl registryUrl;
     private boolean insecureTls;
     private boolean onlyRegister;
+    private boolean plainPasswords;
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -75,6 +76,14 @@ public class Config {
         return onlyRegister;
     }
 
+    public void setPlainPasswords(boolean plainPasswords) {
+        this.plainPasswords = plainPasswords;
+    }
+
+    public boolean isPlainPasswords() {
+        return plainPasswords;
+    }
+
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
@@ -113,6 +122,7 @@ public class Config {
 
         Environment.consumeAs("INSECURE_TLS", Boolean::parseBoolean, result::setInsecureTls);
         Environment.consumeAs("ONLY_REGISTER", Boolean::parseBoolean, result::setOnlyRegister);
+        Environment.consumeAs("PLAIN_PASSWORDS", Boolean::parseBoolean, result::setPlainPasswords);
 
         return result;
     }
