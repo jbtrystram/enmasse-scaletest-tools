@@ -10,13 +10,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.glutamate.lang.Exceptions;
+import okhttp3.ConnectionPool;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -48,7 +51,8 @@ public class Creater implements AutoCloseable {
         this.config = config;
         this.plain = config.isPlainPasswords();
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));
-        var builder = new OkHttpClient.Builder();
+        var builder = new OkHttpClient.Builder()
+                .connectionPool(new ConnectionPool(0,0, TimeUnit.MILLISECONDS));
 
         if (config.isInsecureTls()) {
             Tls.makeOkHttpInsecure(builder);
