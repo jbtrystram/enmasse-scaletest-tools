@@ -11,9 +11,7 @@
   <version>1.0.0-SNAPSHOT</version>
   <modules>
     <module>http-inserter</module>
-    <module>util</module>
     <module>http-reader</module>
-    <module>hotrod-inserter</module>
   </modules>
 
   <properties>
@@ -29,54 +27,17 @@
 
   <dependencyManagement>
     <dependencies>
+
       <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-core</artifactId>
-        <version>${vertx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-web-client</artifactId>
-        <version>${vertx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-config-yaml</artifactId>
-        <version>${vertx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-config</artifactId>
-        <version>${vertx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.enmasse</groupId>
-        <artifactId>iot-service-base</artifactId>
-        <version>${enmasse.version}</version>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>4.2.2</version>
       </dependency>
 
       <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-query-dsl</artifactId>
-        <version>${infinispan.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-client-hotrod</artifactId>
-        <optional>true</optional>
-        <version>${infinispan.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-core</artifactId>
-        <optional>true</optional>
-        <version>${infinispan.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-remote-query-client</artifactId>
-        <optional>true</optional>
-        <version>${infinispan.version}</version>
+        <groupId>io.glutamate</groupId>
+        <artifactId>glutamate</artifactId>
+        <version>0.1.0</version>
       </dependency>
 
       <dependency>
@@ -86,11 +47,11 @@
       </dependency>
 
       <dependency>
-        <groupId>net.trystram</groupId>
-        <artifactId>enmasse-scaletest-util</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <scope>compile</scope>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.10.1</version>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
