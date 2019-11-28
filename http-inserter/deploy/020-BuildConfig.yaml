@@ -1,4 +1,3 @@
----
 kind: BuildConfig
 apiVersion: v1
 metadata:
@@ -10,8 +9,8 @@ spec:
   source: 
     type: Git
     git:
-      uri: https://github.com/ctron/enmasse-scaletest-tools
-      ref: master
+      uri: https://github.com/jbtrystram/enmasse-scaletest-tools
+      ref: ctron
   strategy: 
     type: source
     sourceStrategy:
