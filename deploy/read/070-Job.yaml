@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: http-reader
+spec:
+  backoffLimit: 1
+  parallelism: 5
+  template:
+    spec:
+      serviceAccount: tester
+      containers:
+        - name: main
+          image: http-reader:latest
+          command: ["java"]
+          args:
+           - "-jar"
+           - "/deployments/enmasse-scaletest-http-reader-1.0.0-SNAPSHOT.jar"
+          env:
+            - name: IOT_PROJECT
+              value: iot
+            - name: DEVICE_ID_PREFIX
+              value: "inserter1,inserter2,insrter3,insrter4"
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: REGISTRY_URL
+              value: http://iot-device-registry-debug-endpoint
+            - name: INSECURE_TLS
+              value: "true"
+            - name: ONLY_REGISTER
+              value: "false"
+          resources:
+            limits:
+              memory: 256Mi
+      restartPolicy: Never

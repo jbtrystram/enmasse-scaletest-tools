@@ -1,0 +1,29 @@
+kind: BuildConfig
+apiVersion: v1
+metadata:
+  name: http-reader
+spec:
+  triggers: 
+    - type: ImageChange
+    - type: ConfigChange
+  source: 
+    type: Git
+    git:
+      uri: https://github.com/jbtrystram/enmasse-scaletest-tools
+      ref: ctron
+  strategy: 
+    type: source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: java:11
+      env:
+      - name: MAVEN_ARGS_APPEND
+        value: -B -pl net.trystram:enmasse-scaletest-http-reader --also-make
+      - name: ARTIFACT_DIR
+        value: http-reader/target
+  output:
+    to:
+      kind: ImageStreamTag
+      name: http-reader:latest
