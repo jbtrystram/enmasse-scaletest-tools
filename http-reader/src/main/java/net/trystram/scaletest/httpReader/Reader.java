@@ -1,146 +1,146 @@
 package net.trystram.scaletest.httpReader;
 
+import java.time.Duration;
+import java.time.Instant;
 
-import io.vertx.config.ConfigRetriever;
-import io.vertx.config.ConfigRetrieverOptions;
-import io.vertx.config.ConfigStoreOptions;
-import io.vertx.core.CompositeFuture;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.parsetools.RecordParser;
-import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.WebClientOptions;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
-import io.vertx.ext.web.handler.impl.HttpStatusException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-import net.trystram.scaletest.util.CsvLogger;
-import net.trystram.scaletest.util.HttpConfigValues;
+import okhttp3.ConnectionPool;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Reader {
 
-    private HttpConfigValues config;
-    private List<String> devicesIds;
+    private static final Logger log = LoggerFactory.getLogger(Reader.class);
 
-    private final Logger log = LoggerFactory.getLogger(Reader.class);
-    private final Vertx vertx;
+    private final Config config;
+    private final Statistics stats;
 
-    private final String pathToConfig;
+    private OkHttpClient client;
+    private HttpUrl registrationUrl;
+    private HttpUrl credentialsUrl;
 
-    private CsvLogger csv;
-    private AtomicLong progress = new AtomicLong(0);
-    private AtomicLong errors = new AtomicLong(0);
+    public Reader(Config config) {
+        this.config = config;
+        this.stats = new Statistics(System.out, Duration.ofSeconds(10));
+        var builder = new OkHttpClient.Builder()
+                .connectionPool(new ConnectionPool(0,0, TimeUnit.MILLISECONDS));
 
-    public Reader(String pathToConfig) {
-        VertxOptions vxOptions = new VertxOptions().setBlockedThreadCheckInterval(2000000);
-        vertx = Vertx.vertx(vxOptions);
-        this.pathToConfig = pathToConfig;
-    }
+        if (config.isInsecureTls()) {
+            Tls.makeOkHttpInsecure(builder);
+        }
 
-    public Future<Void> run(Future<Void> startPromise) {
+        this.client = builder.build();
 
-        WebClient client = WebClient.create(vertx, new WebClientOptions()
-                .setDefaultHost(config.getHost())
-                .setDefaultPort(config.getPort())
-                .setSsl(true)
-                .setTrustAll(true)
-                .setVerifyHost(false)
-                // for debugging
-                //.setLogActivity(true)
-        );
+        final HttpUrl base = config.getRegistryUrl();
 
-        List<Future> futureList = new ArrayList<>();
+        this.registrationUrl = base.newBuilder()
+                .addPathSegment("debug")
+                .addPathSegment("registration")
+                .addPathSegment(config.getTenantId())
+                .build();
 
-        for (String id : devicesIds) {
+        this.credentialsUrl = base.newBuilder()
+                .addPathSegment("debug")
+                .addPathSegment("credentials")
+                .addPathSegment("hashed-password")
+                .addPathSegment(config.getTenantId())
+                .build();
 
-           Future requestFuture = Future.future();
-           futureList.add(requestFuture);
-
-           client.get(String.format("/v1/devices/%s/%s", config.getTenantId(), id))
-                   .putHeader("Content-Type", " application/json")
-                   .putHeader("Authorization", "Bearer "+config.getPassword())
-                   .send(res -> {
-                       if (res.succeeded()) {
-                           if (res.result().statusCode() == 200) {
-                               asyncLogger();
-                               requestFuture.complete();
-                           } else {
-                               log.error("Cannot read device : HTTP "+ res.result().statusCode());
-                               errors.incrementAndGet();
-                               requestFuture.fail(new HttpStatusException(res.result().statusCode()));
-                           }
-                       } else {
-                            log.error("HTTP request failed");
-                            log.error(res.cause().getMessage());
-                            errors.incrementAndGet();
-                            requestFuture.fail(res.cause());
-                       }
-                    });
-       }
-
-       CompositeFuture.join(futureList).setHandler(res -> {
-           csv.saveFile();
-           startPromise.complete();
-       });
-
-        return startPromise;
+        System.out.println("Registration URL: " + this.registrationUrl);
+        System.out.println("Credentials URL: " + this.credentialsUrl);
     }
 
 
-    private void asyncLogger(){
-        csv.log(progress.incrementAndGet(), errors.get());
+    private Request.Builder newRequest() {
+        return new Request.Builder()
+                .header("Authorization", "Bearer " + this.config.getAuthToken());
     }
 
-    public Future<Void> configure() {
+    public void run() {
 
-        Future<Void> configured = Future.future();
+        for (long i = 0; i < config.getDevicesToRead(); i++) {
+            try {
+                readDeviceRegistration(ThreadLocalRandom.current().nextLong(config.getMaxDevicesCreated()));
+            } catch (final Exception e) {
+                handleError(e);
+            }
+        }
 
-        ConfigRetriever retriever = ConfigRetriever.create(vertx, new ConfigRetrieverOptions()
-                .addStore(new ConfigStoreOptions()
-                        .setType("file")
-                        .setFormat("yaml")
-                        .setConfig(new JsonObject().put("path", pathToConfig)))
-                .addStore(new ConfigStoreOptions()
-                        .setType("env")));
+    }
 
-        retriever.getConfig(json -> {
-            if (json.failed()) {
-                log.error("Failed to read configuration.", json.cause());
-                configured.fail(json.cause());
-            } else {
-                HttpConfigValues config = json.result().mapTo(HttpConfigValues.class);
+    private void readDeviceRegistration(final long i) throws Exception {
 
-                String verif = config.verify();
-                if (verif != null) {
-                    log.error(verif);
-                    configured.fail(new IllegalArgumentException(verif));
-                } else if (config.getCreatedIdsFile() == null){
-                    log.error("Missing configuration value: createdIdsFile");
-                    configured.fail(new IllegalArgumentException("Missing configuration value: createdIdsFile"));
-                } else {
-                    this.config = config;
-                    csv = new CsvLogger(vertx, config.getCsvLogFile());
-                    devicesIds = readIdsFromFile(config.getCreatedIdsFile());
-                    configured.complete();
+        final String deviceId = getRandomDevicePrefix() + Long.toString(i);
+
+        final Instant start = Instant.now();
+        final Request registration = newRequest()
+                .url(this.registrationUrl
+                        .newBuilder()
+                        .addPathSegment(deviceId)
+                        .build())
+                .get()
+                .build();
+
+        try (Response response = this.client.newCall(registration).execute()) {
+            if (!response.isSuccessful()) {
+                handleRegistrationFailure(response);
+                return;
+            }
+        }
+
+        final Instant endReg = Instant.now();
+        if (!config.isOnlyRegister()) {
+            final String authId = "device-" + Long.toString(i);
+
+            final Request credentials = newRequest()
+                    .url(this.credentialsUrl
+                            .newBuilder()
+                            .addPathSegment(authId)
+                            .build())
+                    .get()
+                    .build();
+
+            try (Response response = this.client.newCall(credentials).execute()) {
+                if (!response.isSuccessful()) {
+                    handleCredentialsFailure(response);
+                    return;
                 }
             }
-        });
-        return configured;
+        }
+        final Instant end = Instant.now();
+
+        handleSuccess(
+                Duration.between(start, endReg),
+                this.config.isOnlyRegister() ? Optional.empty() : Optional.of(Duration.between(endReg, end)));
+
     }
 
-    private List<String> readIdsFromFile(String filename){
+    private void handleError(final Exception e) {
+        log.warn("Failed to process", e);
+    }
 
-        List<String> ids = new ArrayList<>();
-        RecordParser parser = RecordParser.newDelimited("\n", handler -> {
-            ids.add(handler.toString());
-        });
+    private void handleCredentialsFailure(final Response response) {
+        this.stats.errorCredentials();
+    }
 
-        parser.handle(vertx.fileSystem().readFileBlocking(filename));
-        return ids;
+    private void handleRegistrationFailure(final Response response) {
+        this.stats.errorRegister();
+    }
+
+    private void handleSuccess(final Duration r, final Optional<Duration> c) {
+        this.stats.success(r, c);
+    }
+
+    private String getRandomDevicePrefix(){
+        final int size = config.getDeviceIdPrefixes().size();
+
+        return (config.getDeviceIdPrefixes().get(ThreadLocalRandom.current().nextInt(size)));
     }
 }
