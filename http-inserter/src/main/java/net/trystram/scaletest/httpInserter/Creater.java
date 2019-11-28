@@ -34,7 +34,9 @@ public class Creater {
     private HttpUrl registerUrl;
     private HttpUrl credentialsUrl;
 
-    public Creater(Config config) {
+    public Creater(final Config config) {
+        System.out.format("Running with config: %s%n", config);
+
         this.config = config;
         this.plain = config.isPlainPasswords();
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));

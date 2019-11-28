@@ -27,6 +27,11 @@
         <artifactId>glutamate</artifactId>
         <version>0.1.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>27.0.1-jre</version>
+    </dependency>
 
     <dependency>
       <groupId>ch.qos.logback</groupId>

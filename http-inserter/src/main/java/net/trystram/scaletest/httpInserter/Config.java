@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import com.google.common.base.MoreObjects;
+
 import io.glutamate.lang.Environment;
 import io.glutamate.lang.Exceptions;
 import okhttp3.HttpUrl;
@@ -125,6 +128,20 @@ public class Config {
         Environment.consumeAs("PLAIN_PASSWORDS", Boolean::parseBoolean, result::setPlainPasswords);
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("authToken", this.authToken)
+                .add("deviceIdPrefix", this.deviceIdPrefix)
+                .add("devicesToCreate", this.devicesToCreate)
+                .add("insecureTls", this.insecureTls)
+                .add("onlyRegister", this.onlyRegister)
+                .add("plainPasswords", this.plainPasswords)
+                .add("registryUrl", this.registryUrl)
+                .add("tenantId", this.tenantId)
+                .toString();
     }
 
 }
