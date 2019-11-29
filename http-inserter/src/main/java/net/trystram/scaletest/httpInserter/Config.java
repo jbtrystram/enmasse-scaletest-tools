@@ -28,7 +28,7 @@ public class Config {
     }
 
     public long getDevicesToCreate() {
-        return devicesToCreate;
+        return devicesToCreate > 0 ? devicesToCreate : Long.MAX_VALUE;
     }
 
     public void setTenantId(String tenantId) {

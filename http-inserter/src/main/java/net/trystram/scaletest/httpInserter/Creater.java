@@ -73,7 +73,8 @@ public class Creater {
 
     public void run() {
 
-        for (long i = 0; i < config.getDevicesToCreate(); i++) {
+        final long max = this.config.getDevicesToCreate();
+        for (long i = 0; i < max; i++) {
             try {
                 createDevice(i);
             } catch (final Exception e) {
