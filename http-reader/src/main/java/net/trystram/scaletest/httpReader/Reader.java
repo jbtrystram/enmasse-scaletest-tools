@@ -77,7 +77,8 @@ public class Reader {
 
     private void readDeviceRegistration(final long i) throws Exception {
 
-        final String deviceId = getRandomDevicePrefix() + Long.toString(i);
+        final String prefix = getRandomDevicePrefix();
+        final String deviceId = prefix + Long.toString(i);
 
         final Instant start = Instant.now();
         final Request registration = newRequest()
@@ -97,7 +98,7 @@ public class Reader {
 
         final Instant endReg = Instant.now();
         if (!config.isOnlyRegister()) {
-            final String authId = "device-" + Long.toString(i);
+            final String authId = prefix + "auth-" + Long.toString(i);
 
             final Request credentials = newRequest()
                     .url(this.credentialsUrl
