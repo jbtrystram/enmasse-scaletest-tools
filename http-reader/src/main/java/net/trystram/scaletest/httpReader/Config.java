@@ -98,7 +98,8 @@ public class Config {
 
         System.out.format("Using authToken: '%s'%n", result.getAuthToken());
 
-        final String commaSeparatedStr = Environment.get("DEVICE_ID_PREFIXES").orElse("");
+        final String commaSeparatedStr = Environment.get("DEVICE_ID_PREFIXES").orElseThrow(
+                () -> new IllegalStateException("Missing DEVICE_ID_PREFIXES parameters. "));
         result.setDeviceIdPrefixes(Arrays.asList(commaSeparatedStr.split("\\s*,\\s*")));
 
         result.setTenantId(Environment.get("TENANT_ID")
