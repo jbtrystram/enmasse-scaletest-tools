@@ -72,7 +72,7 @@ public class Reader {
                 handleError(e);
             }
         }
-
+        System.exit(0);
     }
 
     private void readDeviceRegistration(final long i) throws Exception {
