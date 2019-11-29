@@ -49,8 +49,8 @@ public class Reader {
         this.credentialsUrl = base.newBuilder()
                 .addPathSegment("debug")
                 .addPathSegment("credentials")
-                .addPathSegment("hashed-password")
                 .addPathSegment(config.getTenantId())
+                .addPathSegment("hashed-password")
                 .build();
 
         System.out.println("Registration URL: " + this.registrationUrl);
@@ -139,7 +139,7 @@ public class Reader {
     }
 
     private String getRandomDevicePrefix(){
-        final int size = config.getDeviceIdPrefixes().size();
+        final int size = config.getDeviceIdPrefixes().size()-1;
 
         return (config.getDeviceIdPrefixes().get(ThreadLocalRandom.current().nextInt(size)));
     }
