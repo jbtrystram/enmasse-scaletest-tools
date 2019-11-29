@@ -1,17 +1,21 @@
 package net.trystram.scaletest.httpInserter;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.glutamate.lang.Exceptions;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -24,6 +28,10 @@ public class Creater implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Creater.class);
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    /**
+     * The RNG for the salt. As this is just for testing, we don't need to use {@link SecureRandom}.
+     */
+    private static final Random R = new Random();
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final Config config;
@@ -154,17 +162,29 @@ public class Creater implements AutoCloseable {
     private String credentialJson(long i) {
         final Map<String, Object> result = new HashMap<>(3);
         result.put("type", "hashed-password");
-        result.put("auth-id", "device-" + i);
+        result.put("auth-id", this.config.getDeviceIdPrefix() + "auth-" + i);
 
         final Map<String, String> secret = new HashMap<>(2);
+        final String password = "longerThanUsualPassword-" + i;
         if ( this.plain ) {
-            secret.put("pwd-plain", "longerThanUsualPassword-" + i);
+            secret.put("pwd-plain", password);
         } else {
-            secret.put("pwd-hash", "$2y$12$JELemetlJuc.6ZgQkCn5X..7UEPQm5iQV23lgno7/2sEKY2i.mPmS");
-            secret.put("hash-function", "bcrypt");
+            final byte [] salt = new byte[8];
+            R.nextBytes(salt);
+            secret.put("pwd-hash", encodePassword(salt, password));
+            secret.put("hash-function", "sha-256");
+            secret.put("salt", Base64.getEncoder().encodeToString(salt));
         }
         result.put("secrets", Collections.singletonList(secret));
 
         return Exceptions.wrap(() -> this.mapper.writeValueAsString(Collections.singletonList(result)));
+    }
+
+    private static String encodePassword(byte[]salt, final String password) {
+        final MessageDigest digest = Exceptions.wrap(() -> MessageDigest.getInstance("SHA-256"));
+        if (salt != null) {
+            digest.update(salt);
+        }
+        return Base64.getEncoder().encodeToString(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
     }
 }
