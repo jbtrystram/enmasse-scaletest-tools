@@ -20,7 +20,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class Creater {
+public class Creater implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Creater.class);
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -65,6 +65,10 @@ public class Creater {
         System.out.println("Credential Example JSON: " + credentialJson(0));
     }
 
+    @Override
+    public void close() {
+        this.stats.close();
+    }
 
     private Request.Builder newRequest() {
         return new Request.Builder()
@@ -81,6 +85,8 @@ public class Creater {
                 handleError(e);
             }
         }
+
+        System.out.format("Finished creating %s devices.%n", max);
 
     }
 
