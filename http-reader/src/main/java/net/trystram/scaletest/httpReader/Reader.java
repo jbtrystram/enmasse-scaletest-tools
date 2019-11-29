@@ -15,7 +15,7 @@ import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Reader {
+public class Reader implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Reader.class);
 
@@ -57,6 +57,10 @@ public class Reader {
         System.out.println("Credentials URL: " + this.credentialsUrl);
     }
 
+    @Override
+    public void close() {
+        this.stats.close();
+    }
 
     private Request.Builder newRequest() {
         return new Request.Builder()
@@ -65,14 +69,15 @@ public class Reader {
 
     public void run() {
 
-        for (long i = 0; i < config.getDevicesToRead(); i++) {
+        long max = config.getDevicesToRead();
+        for (long i = 0; i < max; i++) {
             try {
                 readDeviceRegistration(ThreadLocalRandom.current().nextLong(config.getMaxDevicesCreated()));
             } catch (final Exception e) {
                 handleError(e);
             }
         }
-        System.exit(0);
+        System.out.format("Finished reading %s devices.%n", max);
     }
 
     private void readDeviceRegistration(final long i) throws Exception {

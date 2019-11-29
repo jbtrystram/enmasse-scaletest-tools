@@ -39,7 +39,7 @@ public class Statistics implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         this.executor.shutdown();
         this.out.close();
     }
