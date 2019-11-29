@@ -32,7 +32,7 @@ public class Statistics implements AutoCloseable {
         this.out = out;
         this.executor = Executors.newScheduledThreadPool(1);
         this.executor.scheduleAtFixedRate(this::tick, print.toMillis(), print.toMillis(), TimeUnit.MILLISECONDS);
-        this.out.println("Time;Total;Created;Rate;ErrorsR;ErrorsC;AvgR;AvgC");
+        this.out.println("Time;Created;Total;Rate;ErrorsR;ErrorsC;AvgR;AvgC");
     }
 
     public Statistics(final OutputStream out, final Duration print) {

@@ -101,7 +101,6 @@ public class Config {
         final String commaSeparatedStr = Environment.get("DEVICE_ID_PREFIXES").orElse("");
         result.setDeviceIdPrefixes(Arrays.asList(commaSeparatedStr.split("\\s*,\\s*")));
 
-
         result.setTenantId(Environment.get("TENANT_ID")
                 .or(() -> {
                     return Environment.get("NAMESPACE")
