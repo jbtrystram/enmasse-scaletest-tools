@@ -74,6 +74,7 @@ public class Creater implements AutoCloseable {
 
         System.out.println("Register URL: " + this.registerUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
+        System.out.println("Device ID example value:" + this.config.getDeviceIdPrefix() + 0);
         System.out.println("Credential Example JSON: " + credentialJson(0));
     }
 
