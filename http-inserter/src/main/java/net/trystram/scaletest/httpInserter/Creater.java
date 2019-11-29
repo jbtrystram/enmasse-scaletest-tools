@@ -52,7 +52,7 @@ public class Creater implements AutoCloseable {
         this.plain = config.isPlainPasswords();
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));
         var builder = new OkHttpClient.Builder()
-                .connectionPool(new ConnectionPool(0,0, TimeUnit.MILLISECONDS));
+                .connectionPool(new ConnectionPool(0,1, TimeUnit.MILLISECONDS));
 
         if (config.isInsecureTls()) {
             Tls.makeOkHttpInsecure(builder);
