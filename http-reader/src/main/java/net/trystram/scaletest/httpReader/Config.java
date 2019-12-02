@@ -38,7 +38,7 @@ public class Config {
         return tenantId;
     }
 
-    public void setDeviceIdPrefixes(List deviceIdPrefixes) {
+    public void setDeviceIdPrefixes(List<String> deviceIdPrefixes) {
         this.deviceIdPrefixes = deviceIdPrefixes;
     }
 
