@@ -22,8 +22,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: MAX_DEVICES
-              value: "500"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
