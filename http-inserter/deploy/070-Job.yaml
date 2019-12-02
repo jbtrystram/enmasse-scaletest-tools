@@ -4,10 +4,10 @@ metadata:
   name: http-inserter
 spec:
   backoffLimit: 1
-  parallelism: 60
+  parallelism: 5
   template:
     spec:
-      serviceAccount: tester
+      serviceAccount: http-inserter
       containers:
         - name: main
           image: http-inserter:latest
@@ -35,7 +35,7 @@ spec:
             - name: PLAIN_PASSWORDS
               value: "false"
             - name: MAX_DEVICES
-              value: "-1"
+              value: "2000"
           resources:
             limits:
               memory: 256Mi

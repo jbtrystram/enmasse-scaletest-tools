@@ -7,7 +7,7 @@ spec:
   parallelism: 5
   template:
     spec:
-      serviceAccount: tester
+      serviceAccount: http-reader
       containers:
         - name: main
           image: http-reader:latest
