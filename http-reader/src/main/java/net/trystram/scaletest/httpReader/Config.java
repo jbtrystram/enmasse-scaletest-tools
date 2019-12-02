@@ -105,6 +105,10 @@ public class Config {
         System.out.format("Using prefixes: %s%n", prefixes);
         result.setDeviceIdPrefixes(prefixes);
 
+        if (result.getDeviceIdPrefixes().isEmpty()) {
+            throw new IllegalStateException("No prefixes set. Unable to run.");
+        }
+
         result.setTenantId(Environment.get("TENANT_ID")
                 .or(() -> Environment.get("IOT_PROJECT")
                         .map(prj -> namespace + "." + prj))
