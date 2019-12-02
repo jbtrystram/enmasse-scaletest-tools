@@ -47,7 +47,7 @@ public class Config {
     }
 
     public long getDevicesToRead() {
-        return devicesToRead;
+        return this.devicesToRead > 0 ? this.devicesToRead : Long.MAX_VALUE;
     }
 
     public void setDevicesToRead(long devicesToRead) {
