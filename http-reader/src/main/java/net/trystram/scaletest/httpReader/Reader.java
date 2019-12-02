@@ -26,11 +26,13 @@ public class Reader implements AutoCloseable {
     private HttpUrl registrationUrl;
     private HttpUrl credentialsUrl;
 
+    private final int max;
+
     public Reader(Config config) {
         this.config = config;
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));
         var builder = new OkHttpClient.Builder()
-                .connectionPool(new ConnectionPool(0,1, TimeUnit.MILLISECONDS));
+                .connectionPool(new ConnectionPool(0, 1, TimeUnit.MILLISECONDS));
 
         if (config.isInsecureTls()) {
             Tls.makeOkHttpInsecure(builder);
@@ -55,6 +57,7 @@ public class Reader implements AutoCloseable {
 
         System.out.println("Registration URL: " + this.registrationUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
+        this.max = config.getDeviceIdPrefixes().size();
     }
 
     @Override
@@ -144,9 +147,11 @@ public class Reader implements AutoCloseable {
         this.stats.success(r, c);
     }
 
-    private String getRandomDevicePrefix(){
-        final int size = config.getDeviceIdPrefixes().size()-1;
-
-        return (config.getDeviceIdPrefixes().get(ThreadLocalRandom.current().nextInt(size)));
+    private String getRandomDevicePrefix() {
+        return this.config
+                .getDeviceIdPrefixes()
+                .get(ThreadLocalRandom
+                        .current()
+                        .nextInt(this.max));
     }
 }
