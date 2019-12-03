@@ -4,7 +4,7 @@ metadata:
   name: http-reader
 spec:
   backoffLimit: 1
-  parallelism: 5
+  parallelism: 50
   template:
     spec:
       serviceAccount: http-reader
@@ -19,7 +19,7 @@ spec:
             - name: IOT_PROJECT
               value: iot
             - name: MAX_DEVICES_CREATED
-              value: "500"
+              value: "2000"
             - name: DEVICES_TO_READ
               value: "-1"
             - name: NAMESPACE
@@ -30,9 +30,12 @@ spec:
               value: http://iot-device-registry-debug-endpoint.enmasse-infra.svc
             - name: INSECURE_TLS
               value: "true"
-            - name: ONLY_REGISTER
-              value: "false"
+            - name: VERIFY_PASSWORDS
+              value: "true"
           resources:
+            requests:
+              cpu: "500m"
             limits:
+              cpu: "500m"
               memory: 256Mi
       restartPolicy: Never

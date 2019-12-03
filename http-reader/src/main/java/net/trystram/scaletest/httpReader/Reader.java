@@ -37,7 +37,7 @@ public class Reader implements AutoCloseable {
     private HttpUrl registrationUrl;
     private HttpUrl credentialsUrl;
 
-    public Reader(Config config) {
+    public Reader(Config config) throws Exception {
         this.config = config;
         this.max = config.getDeviceIdPrefixes().size();
 
@@ -136,7 +136,7 @@ public class Reader implements AutoCloseable {
                     final JsonNode secrets = credential.get("secrets");
 
                     if (!verifyPassword(secrets.get(0).get("salt").asText(), secrets.get(0).get("pwd-hash").asText(), i)) {
-                        handleCredentialsFailure(response);
+                        handleVerifyFailure(response);
                         return;
                     }
                 }
@@ -157,6 +157,10 @@ public class Reader implements AutoCloseable {
 
     private void handleCredentialsFailure(final Response response) {
         this.stats.errorCredentials();
+    }
+
+    private void handleVerifyFailure(final Response response) {
+        this.stats.errorVerify();
     }
 
     private void handleRegistrationFailure(final Response response) {
