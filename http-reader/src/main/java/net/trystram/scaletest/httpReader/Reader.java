@@ -26,6 +26,7 @@ public class Reader implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Reader.class);
 
+    private final ObjectMapper mapper = new ObjectMapper();
     private final Config config;
     private final Statistics stats;
 
@@ -64,7 +65,7 @@ public class Reader implements AutoCloseable {
 
         System.out.println("Registration URL: " + this.registrationUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
-        this.max = config.getDeviceIdPrefixes().size();
+        this.max = config.getDeviceIdPrefixes().size() -1;
     }
 
     @Override
@@ -159,10 +160,12 @@ public class Reader implements AutoCloseable {
         this.stats.success(r, c);
     }
 
-    private String getRandomDevicePrefix(){
-        final int size = config.getDeviceIdPrefixes().size()-1;
-
-        return (config.getDeviceIdPrefixes().get(ThreadLocalRandom.current().nextInt(size)));
+    private String getRandomDevicePrefix() {
+        return this.config
+                .getDeviceIdPrefixes()
+                .get(ThreadLocalRandom
+                        .current()
+                        .nextInt(this.max));
     }
 
     private static String encodePassword(byte[]salt, final String password) {

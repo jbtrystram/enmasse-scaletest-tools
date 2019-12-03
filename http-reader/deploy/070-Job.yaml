@@ -18,8 +18,6 @@ spec:
           env:
             - name: IOT_PROJECT
               value: iot
-            - name: DEVICE_ID_PREFIXES
-              value: "http-inserter-k6kcr,http-inserter-ppbw2"
             - name: MAX_DEVICES_CREATED
               value: "500"
             - name: DEVICES_TO_READ
