@@ -39,6 +39,7 @@ public class Creater implements AutoCloseable {
     private final ObjectMapper mapper = new ObjectMapper();
     private final Config config;
     private final boolean plain;
+    private final boolean dynamic;
     private final Statistics stats;
 
     private OkHttpClient client;
@@ -50,9 +51,10 @@ public class Creater implements AutoCloseable {
 
         this.config = config;
         this.plain = config.isPlainPasswords();
+        this.dynamic = config.isDynamicPasswords();
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));
         var builder = new OkHttpClient.Builder()
-                .connectionPool(new ConnectionPool(0,1, TimeUnit.MILLISECONDS));
+                .connectionPool(new ConnectionPool(0, 1, TimeUnit.MILLISECONDS));
 
         if (config.isInsecureTls()) {
             Tls.makeOkHttpInsecure(builder);
@@ -171,10 +173,14 @@ public class Creater implements AutoCloseable {
 
         final Map<String, String> secret = new HashMap<>(2);
         final String password = "longerThanUsualPassword-" + i;
-        if ( this.plain ) {
+        if (this.plain) {
             secret.put("pwd-plain", password);
+        } else if (!this.dynamic) {
+            secret.put("pwd-hash", "GO/C0ZqOnMFs2QnCUxFR92pu1uPe4fdMgVCXGjnH7uk=");
+            secret.put("salt", "YvajSViCAW8=");
+            secret.put("hash-function", "sha-256");
         } else {
-            final byte [] salt = new byte[8];
+            final byte[] salt = new byte[8];
             R.nextBytes(salt);
             secret.put("pwd-hash", encodePassword(salt, password));
             secret.put("hash-function", "sha-256");
@@ -185,7 +191,7 @@ public class Creater implements AutoCloseable {
         return Exceptions.wrap(() -> this.mapper.writeValueAsString(Collections.singletonList(result)));
     }
 
-    private static String encodePassword(byte[]salt, final String password) {
+    private static String encodePassword(byte[] salt, final String password) {
         final MessageDigest digest = Exceptions.wrap(() -> MessageDigest.getInstance("SHA-256"));
         if (salt != null) {
             digest.update(salt);

@@ -22,6 +22,7 @@ public class Config {
     private boolean insecureTls;
     private boolean onlyRegister;
     private boolean plainPasswords;
+    private boolean dynamicPasswords;
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -87,6 +88,14 @@ public class Config {
         return plainPasswords;
     }
 
+    public void setDynamicPasswords(boolean dynamicPasswords) {
+        this.dynamicPasswords = dynamicPasswords;
+    }
+
+    public boolean isDynamicPasswords() {
+        return dynamicPasswords;
+    }
+
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
@@ -126,6 +135,7 @@ public class Config {
         Environment.consumeAs("INSECURE_TLS", Boolean::parseBoolean, result::setInsecureTls);
         Environment.consumeAs("ONLY_REGISTER", Boolean::parseBoolean, result::setOnlyRegister);
         Environment.consumeAs("PLAIN_PASSWORDS", Boolean::parseBoolean, result::setPlainPasswords);
+        Environment.consumeAs("DYNAMIC_PASSWORDS", Boolean::parseBoolean, result::setDynamicPasswords);
 
         return result;
     }
