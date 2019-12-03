@@ -175,7 +175,6 @@ public class Reader implements AutoCloseable {
 
         final String expectedPassword = "longerThanUsualPassword-" + deviceId;
         final byte[] salt = Base64.getDecoder().decode(saltAsString);
-
         final String expectedHash = encodePassword(salt, expectedPassword);
 
         return hash.equals(expectedHash);

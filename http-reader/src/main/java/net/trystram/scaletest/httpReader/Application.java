@@ -6,7 +6,8 @@ public class Application {
 
     public static void main(String args[]) throws IOException {
 
-        final Reader app = new Reader(Config.fromEnv());
-        app.run();
+        try (final Reader app = new Reader(Config.fromEnv())) {
+            app.run();
+        }
     }
 }
