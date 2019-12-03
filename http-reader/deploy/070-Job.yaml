@@ -7,7 +7,7 @@ spec:
   parallelism: 5
   template:
     spec:
-      serviceAccount: tester
+      serviceAccount: http-reader
       containers:
         - name: main
           image: http-reader:latest
@@ -23,13 +23,13 @@ spec:
             - name: MAX_DEVICES_CREATED
               value: "500"
             - name: DEVICES_TO_READ
-              value: "10000"
+              value: "-1"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: REGISTRY_URL
-              value: http://iot-device-registry-debug-endpoint
+              value: http://iot-device-registry-debug-endpoint.enmasse-infra.svc
             - name: INSECURE_TLS
               value: "true"
             - name: ONLY_REGISTER

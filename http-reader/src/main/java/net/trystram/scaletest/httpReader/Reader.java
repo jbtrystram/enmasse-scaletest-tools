@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 import java.util.Base64;
+
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +26,6 @@ public class Reader implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Reader.class);
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
     private final Config config;
     private final Statistics stats;
 
@@ -34,11 +33,13 @@ public class Reader implements AutoCloseable {
     private HttpUrl registrationUrl;
     private HttpUrl credentialsUrl;
 
+    private final int max;
+
     public Reader(Config config) {
         this.config = config;
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));
         var builder = new OkHttpClient.Builder()
-                .connectionPool(new ConnectionPool(0,1, TimeUnit.MILLISECONDS));
+                .connectionPool(new ConnectionPool(0, 1, TimeUnit.MILLISECONDS));
 
         if (config.isInsecureTls()) {
             Tls.makeOkHttpInsecure(builder);
@@ -63,6 +64,7 @@ public class Reader implements AutoCloseable {
 
         System.out.println("Registration URL: " + this.registrationUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
+        this.max = config.getDeviceIdPrefixes().size();
     }
 
     @Override
@@ -89,6 +91,7 @@ public class Reader implements AutoCloseable {
         final String deviceId = prefix + Long.toString(i);
 
         final Instant start = Instant.now();
+
         final Request registration = new Request.Builder()
                 .url(this.registrationUrl
                         .newBuilder()
@@ -138,7 +141,6 @@ public class Reader implements AutoCloseable {
         handleSuccess(
                 Duration.between(start, endReg),
                 this.config.isOnlyRegister() ? Optional.empty() : Optional.of(Duration.between(endReg, end)));
-
     }
 
     private void handleError(final Exception e) {

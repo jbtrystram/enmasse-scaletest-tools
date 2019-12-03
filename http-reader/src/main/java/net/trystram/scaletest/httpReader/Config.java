@@ -38,7 +38,7 @@ public class Config {
         return tenantId;
     }
 
-    public void setDeviceIdPrefixes(List deviceIdPrefixes) {
+    public void setDeviceIdPrefixes(List<String> deviceIdPrefixes) {
         this.deviceIdPrefixes = deviceIdPrefixes;
     }
 
@@ -47,13 +47,13 @@ public class Config {
     }
 
     public long getDevicesToRead() {
-        return devicesToRead;
+
+        return this.devicesToRead > 0 ? this.devicesToRead : Long.MAX_VALUE;
     }
 
     public void setDevicesToRead(long devicesToRead) {
         this.devicesToRead = devicesToRead;
     }
-
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
@@ -96,18 +96,24 @@ public class Config {
                                 Paths.get("/run/secrets/kubernetes.io/serviceaccount/token"),
                                 StandardCharsets.UTF_8))));
 
+
+        final String namespace = Environment.getRequired("NAMESPACE");
+
         System.out.format("Using authToken: '%s'%n", result.getAuthToken());
 
-        final String commaSeparatedStr = Environment.get("DEVICE_ID_PREFIXES").orElseThrow(
-                () -> new IllegalStateException("Missing DEVICE_ID_PREFIXES parameters. "));
-        result.setDeviceIdPrefixes(Arrays.asList(commaSeparatedStr.split("\\s*,\\s*")));
+        final List<String> prefixes = Environment.get("DEVICE_ID_PREFIXES")
+                .map(str -> Arrays.asList(str.split("\\s*,\\s*")))
+                .orElseGet(() -> Jobs.findJobs(namespace));
+        System.out.format("Using prefixes: %s%n", prefixes);
+        result.setDeviceIdPrefixes(prefixes);
+
+        if (result.getDeviceIdPrefixes().isEmpty()) {
+            throw new IllegalStateException("No prefixes set. Unable to run.");
+        }
 
         result.setTenantId(Environment.get("TENANT_ID")
-                .or(() -> {
-                    return Environment.get("NAMESPACE")
-                            .flatMap(ns -> Environment.get("IOT_PROJECT")
-                                    .map(prj -> ns + "." + prj));
-                })
+                .or(() -> Environment.get("IOT_PROJECT")
+                        .map(prj -> namespace + "." + prj))
                 .orElseThrow(
                         () -> new IllegalStateException("Missing tenant information. Need 'TENANT_ID' or 'IOT_PROJECT' and 'NAMESPACE'")));
 

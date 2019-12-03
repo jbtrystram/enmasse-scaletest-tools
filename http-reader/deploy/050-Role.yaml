@@ -1,8 +1,11 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: tester
+  name: http-reader
 rules:
   - apiGroups: [ "iot.enmasse.io" ]
     resources: [ "iotprojects" ]
     verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
+  - apiGroups: [ "" ]
+    resources: [ "pods" ]
+    verbs: [ "get", "list", "watch" ]
