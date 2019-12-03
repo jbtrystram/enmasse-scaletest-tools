@@ -149,6 +149,7 @@ public class Config {
                 .add("insecureTls", this.insecureTls)
                 .add("onlyRegister", this.onlyRegister)
                 .add("plainPasswords", this.plainPasswords)
+                .add("dynamicPasswords", this.dynamicPasswords)
                 .add("registryUrl", this.registryUrl)
                 .add("tenantId", this.tenantId)
                 .toString();
