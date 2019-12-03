@@ -23,6 +23,7 @@ public class Config {
     private boolean onlyRegister;
     private boolean plainPasswords;
     private boolean dynamicPasswords;
+    private boolean disableConnectionPool;
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -96,6 +97,14 @@ public class Config {
         return dynamicPasswords;
     }
 
+    public void setDisableConnectionPool(boolean disableConnectionPool) {
+        this.disableConnectionPool = disableConnectionPool;
+    }
+
+    public boolean isDisableConnectionPool() {
+        return disableConnectionPool;
+    }
+
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
@@ -136,6 +145,7 @@ public class Config {
         Environment.consumeAs("ONLY_REGISTER", Boolean::parseBoolean, result::setOnlyRegister);
         Environment.consumeAs("PLAIN_PASSWORDS", Boolean::parseBoolean, result::setPlainPasswords);
         Environment.consumeAs("DYNAMIC_PASSWORDS", Boolean::parseBoolean, result::setDynamicPasswords);
+        Environment.consumeAs("DISABLE_CONNECTION_POOL", Boolean::parseBoolean, result::setDisableConnectionPool);
 
         return result;
     }
@@ -152,6 +162,7 @@ public class Config {
                 .add("dynamicPasswords", this.dynamicPasswords)
                 .add("registryUrl", this.registryUrl)
                 .add("tenantId", this.tenantId)
+                .add("disableConnectionPool", this.disableConnectionPool)
                 .toString();
     }
 
