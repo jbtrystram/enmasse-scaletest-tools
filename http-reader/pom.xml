@@ -24,6 +24,11 @@
       <groupId>io.glutamate</groupId>
       <artifactId>glutamate</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.trystram</groupId>
+      <artifactId>enmasse-scaletest-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>ch.qos.logback</groupId>

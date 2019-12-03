@@ -7,12 +7,14 @@
 
     <groupId>net.trystram</groupId>
     <artifactId>enmasse-scaletest-tools</artifactId>
-  <packaging>pom</packaging>
-  <version>1.0.0-SNAPSHOT</version>
-  <modules>
-    <module>http-inserter</module>
-    <module>http-reader</module>
-  </modules>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <modules>
+        <module>common</module>
+        <module>http-inserter</module>
+        <module>http-reader</module>
+    </modules>
 
   <properties>
     <logback.version>1.2.3</logback.version>

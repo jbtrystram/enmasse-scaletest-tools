@@ -8,7 +8,10 @@
  * Contributors:
  *     Jens Reimann - initial API and implementation
  *******************************************************************************/
-package net.trystram.scaletest.httpReader;
+package net.trystram.scaletest;
+
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -17,8 +20,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import okhttp3.OkHttpClient.Builder;
 
 public class Tls {

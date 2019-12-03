@@ -3,6 +3,8 @@ package net.trystram.scaletest.httpReader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.glutamate.lang.Exceptions;
+import net.trystram.scaletest.Tls;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Duration;
