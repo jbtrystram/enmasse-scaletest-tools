@@ -1,8 +1,14 @@
 package net.trystram.scaletest.httpReader;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.glutamate.lang.Exceptions;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
 
+import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +24,8 @@ import org.slf4j.LoggerFactory;
 public class Reader implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Reader.class);
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private final Config config;
     private final Statistics stats;
@@ -62,11 +70,6 @@ public class Reader implements AutoCloseable {
         this.stats.close();
     }
 
-    private Request.Builder newRequest() {
-        return new Request.Builder()
-                .header("Authorization", "Bearer " + this.config.getAuthToken());
-    }
-
     public void run() {
 
         long max = config.getDevicesToRead();
@@ -86,7 +89,7 @@ public class Reader implements AutoCloseable {
         final String deviceId = prefix + Long.toString(i);
 
         final Instant start = Instant.now();
-        final Request registration = newRequest()
+        final Request registration = new Request.Builder()
                 .url(this.registrationUrl
                         .newBuilder()
                         .addPathSegment(deviceId)
@@ -105,7 +108,7 @@ public class Reader implements AutoCloseable {
         if (!config.isOnlyRegister()) {
             final String authId = prefix + "auth-" + Long.toString(i);
 
-            final Request credentials = newRequest()
+            final Request credentials = new Request.Builder()
                     .url(this.credentialsUrl
                             .newBuilder()
                             .addPathSegment(authId)
@@ -118,6 +121,16 @@ public class Reader implements AutoCloseable {
                     handleCredentialsFailure(response);
                     return;
                 }
+
+                // verify the credential
+                final JsonNode credential = mapper.readTree(response.body().bytes());
+                final JsonNode secrets = credential.get("secrets");
+
+                if (! verifyPassword(secrets.get(0).get("salt").asText(), secrets.get(0).get("pwd-hash").asText(), i)){
+                    handleCredentialsFailure(response);
+                    return;
+                }
+
             }
         }
         final Instant end = Instant.now();
@@ -148,5 +161,23 @@ public class Reader implements AutoCloseable {
         final int size = config.getDeviceIdPrefixes().size()-1;
 
         return (config.getDeviceIdPrefixes().get(ThreadLocalRandom.current().nextInt(size)));
+    }
+
+    private static String encodePassword(byte[]salt, final String password) {
+        final MessageDigest digest = Exceptions.wrap(() -> MessageDigest.getInstance("SHA-256"));
+        if (salt != null) {
+            digest.update(salt);
+        }
+        return Base64.getEncoder().encodeToString(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private static boolean verifyPassword(final String saltAsString, final String hash, long deviceId) {
+
+        final String expectedPassword = "longerThanUsualPassword-" + deviceId;
+        final byte[] salt = Base64.getDecoder().decode(saltAsString);
+
+        final String expectedHash = encodePassword(salt, expectedPassword);
+
+        return hash.equals(expectedHash);
     }
 }
