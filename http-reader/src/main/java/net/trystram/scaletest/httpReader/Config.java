@@ -17,7 +17,6 @@ public class Config {
     private List<String> deviceIdPrefixes;
 
     private String tenantId;
-    private String authToken;
     private HttpUrl registryUrl;
     private boolean insecureTls;
     private boolean onlyRegister;
@@ -55,14 +54,6 @@ public class Config {
         this.devicesToRead = devicesToRead;
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
-
-    public String getAuthToken() {
-        return authToken;
-    }
-
     public void setRegistryUrl(HttpUrl registryUrl) {
         this.registryUrl = registryUrl;
     }
@@ -98,15 +89,7 @@ public class Config {
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
-        result.setAuthToken(Environment.get("AUTH_TOKEN")
-                .orElseGet(() -> Exceptions.wrap(
-                        () -> Files.readString(
-                                Paths.get("/run/secrets/kubernetes.io/serviceaccount/token"),
-                                StandardCharsets.UTF_8))));
-
         final String namespace = Environment.getRequired("NAMESPACE");
-
-        System.out.format("Using authToken: '%s'%n", result.getAuthToken());
 
         final List<String> prefixes = Environment.get("DEVICE_ID_PREFIXES")
                 .map(str -> Arrays.asList(str.split("\\s*,\\s*")))
