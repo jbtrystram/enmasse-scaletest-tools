@@ -52,7 +52,7 @@ public class Creater implements AutoCloseable {
         this.config = config;
         this.plain = config.isPlainPasswords();
         this.dynamic = config.isDynamicPasswords();
-        this.stats = new Statistics(System.out, Duration.ofSeconds(10));
+
         var builder = new OkHttpClient.Builder();
 
         if ( config.isDisableConnectionPool() ) {
@@ -81,6 +81,8 @@ public class Creater implements AutoCloseable {
         System.out.println("Credentials URL: " + this.credentialsUrl);
         System.out.println("Device ID example value:" + this.config.getDeviceIdPrefix() + 0);
         System.out.println("Credential Example JSON: " + credentialJson(0));
+
+        this.stats = new Statistics(System.out, Duration.ofSeconds(10));
     }
 
     @Override

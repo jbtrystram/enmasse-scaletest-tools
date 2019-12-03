@@ -20,17 +20,17 @@ public class Reader implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(Reader.class);
 
     private final Config config;
+    private final int max;
     private final Statistics stats;
 
     private OkHttpClient client;
     private HttpUrl registrationUrl;
     private HttpUrl credentialsUrl;
 
-    private final int max;
-
     public Reader(Config config) {
         this.config = config;
-        this.stats = new Statistics(System.out, Duration.ofSeconds(10));
+        this.max = config.getDeviceIdPrefixes().size();
+
         var builder = new OkHttpClient.Builder()
                 .connectionPool(new ConnectionPool(0, 1, TimeUnit.MILLISECONDS));
 
@@ -57,7 +57,8 @@ public class Reader implements AutoCloseable {
 
         System.out.println("Registration URL: " + this.registrationUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
-        this.max = config.getDeviceIdPrefixes().size();
+
+        this.stats = new Statistics(System.out, Duration.ofSeconds(10));
     }
 
     @Override
