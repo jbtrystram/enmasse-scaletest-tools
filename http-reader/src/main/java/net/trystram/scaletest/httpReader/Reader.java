@@ -31,8 +31,10 @@ public class Reader implements AutoCloseable {
         this.config = config;
         this.max = config.getDeviceIdPrefixes().size();
 
-        var builder = new OkHttpClient.Builder()
-                .connectionPool(new ConnectionPool(0, 1, TimeUnit.MILLISECONDS));
+        var builder = new OkHttpClient.Builder();
+        if (config.isDisableConnectionPool()) {
+            builder.connectionPool(new ConnectionPool(0, 1, TimeUnit.MILLISECONDS));
+        }
 
         if (config.isInsecureTls()) {
             Tls.makeOkHttpInsecure(builder);

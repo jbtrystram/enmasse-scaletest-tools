@@ -21,6 +21,7 @@ public class Config {
     private HttpUrl registryUrl;
     private boolean insecureTls;
     private boolean onlyRegister;
+    private boolean disableConnectionPool;
 
     public void setMaxDevicesCreated(long maxDevicesCreated) {
         this.maxDevicesCreated = maxDevicesCreated;
@@ -86,6 +87,14 @@ public class Config {
         return onlyRegister;
     }
 
+    public void setDisableConnectionPool(boolean disableConnectionPool) {
+        this.disableConnectionPool = disableConnectionPool;
+    }
+
+    public boolean isDisableConnectionPool() {
+        return disableConnectionPool;
+    }
+
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
@@ -133,6 +142,7 @@ public class Config {
 
         Environment.consumeAs("INSECURE_TLS", Boolean::parseBoolean, result::setInsecureTls);
         Environment.consumeAs("ONLY_REGISTER", Boolean::parseBoolean, result::setOnlyRegister);
+        Environment.consumeAs("DISABLE_CONNECTION_POOL", Boolean::parseBoolean, result::setDisableConnectionPool);
 
         return result;
     }
