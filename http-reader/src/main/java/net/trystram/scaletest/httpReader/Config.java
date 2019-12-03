@@ -1,13 +1,10 @@
 package net.trystram.scaletest.httpReader;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import io.glutamate.lang.Environment;
-import io.glutamate.lang.Exceptions;
 import java.util.Arrays;
 import java.util.List;
+
+import io.glutamate.lang.Environment;
 import okhttp3.HttpUrl;
 
 public class Config {
@@ -21,6 +18,7 @@ public class Config {
     private boolean insecureTls;
     private boolean onlyRegister;
     private boolean disableConnectionPool;
+    private boolean verifyPasswords;
 
     public void setMaxDevicesCreated(long maxDevicesCreated) {
         this.maxDevicesCreated = maxDevicesCreated;
@@ -86,6 +84,14 @@ public class Config {
         return disableConnectionPool;
     }
 
+    public void setVerifyPasswords(boolean verifyPasswords) {
+        this.verifyPasswords = verifyPasswords;
+    }
+
+    public boolean isVerifyPasswords() {
+        return verifyPasswords;
+    }
+
     public static Config fromEnv() throws IOException {
         final Config result = new Config();
 
@@ -126,6 +132,7 @@ public class Config {
         Environment.consumeAs("INSECURE_TLS", Boolean::parseBoolean, result::setInsecureTls);
         Environment.consumeAs("ONLY_REGISTER", Boolean::parseBoolean, result::setOnlyRegister);
         Environment.consumeAs("DISABLE_CONNECTION_POOL", Boolean::parseBoolean, result::setDisableConnectionPool);
+        Environment.consumeAs("VERIFY_PASSWORDS", Boolean::parseBoolean, result::setVerifyPasswords);
 
         return result;
     }

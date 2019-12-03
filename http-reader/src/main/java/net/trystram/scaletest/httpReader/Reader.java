@@ -128,13 +128,15 @@ public class Reader implements AutoCloseable {
                     return;
                 }
 
-                // verify the credential
-                final JsonNode credential = mapper.readTree(response.body().bytes());
-                final JsonNode secrets = credential.get("secrets");
+                if ( config.isVerifyPasswords()) {
+                    // verify the credential
+                    final JsonNode credential = this.mapper.readTree(response.body().bytes());
+                    final JsonNode secrets = credential.get("secrets");
 
-                if (! verifyPassword(secrets.get(0).get("salt").asText(), secrets.get(0).get("pwd-hash").asText(), i)){
-                    handleCredentialsFailure(response);
-                    return;
+                    if (!verifyPassword(secrets.get(0).get("salt").asText(), secrets.get(0).get("pwd-hash").asText(), i)) {
+                        handleCredentialsFailure(response);
+                        return;
+                    }
                 }
 
             }
@@ -171,7 +173,7 @@ public class Reader implements AutoCloseable {
                         .nextInt(this.max));
     }
 
-    private static String encodePassword(byte[]salt, final String password) {
+    private static String encodePassword(byte[] salt, final String password) {
         final MessageDigest digest = Exceptions.wrap(() -> MessageDigest.getInstance("SHA-256"));
         if (salt != null) {
             digest.update(salt);
