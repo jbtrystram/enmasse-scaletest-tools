@@ -47,7 +47,7 @@ public class Creater implements AutoCloseable {
     private HttpUrl registerUrl;
     private HttpUrl credentialsUrl;
 
-    public Creater(final Config config) {
+    public Creater(final Config config) throws Exception {
         System.out.format("Running with config: %s%n", config);
 
         this.config = config;
