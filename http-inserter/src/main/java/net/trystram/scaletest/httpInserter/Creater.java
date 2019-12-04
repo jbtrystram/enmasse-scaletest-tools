@@ -44,6 +44,7 @@ public class Creater implements AutoCloseable {
     private final boolean dynamic;
     private final Statistics stats;
     private final String registrationBody;
+    private final int credentialExtSize;
 
     private OkHttpClient client;
     private HttpUrl registerUrl;
@@ -81,6 +82,7 @@ public class Creater implements AutoCloseable {
                 .build();
 
         this.registrationBody = getRegistrationBody();
+        this.credentialExtSize = this.config.getCredentialExtPayloadSize();
 
         System.out.println("Register URL: " + this.registerUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
@@ -181,6 +183,7 @@ public class Creater implements AutoCloseable {
         final Map<String, Object> result = new HashMap<>(3);
         result.put("type", "hashed-password");
         result.put("auth-id", this.config.getDeviceIdPrefix() + "auth-" + i);
+        result.put("ext", getCredentialExt());
 
         final Map<String, String> secret = new HashMap<>(2);
         final String password = "longerThanUsualPassword-" + i;
@@ -211,7 +214,7 @@ public class Creater implements AutoCloseable {
     }
 
     private String getRegistrationBody(){
-        final int size = config.getRegistrationPayloadSize();
+        final int size = config.getRegistrationExtPayloadSize();
 
         if (size > 0) {
             Map<String, Object> root = new HashMap<>();
@@ -225,6 +228,18 @@ public class Creater implements AutoCloseable {
             return Exceptions.wrap(() -> mapper.writeValueAsString(root));
         } else {
             return "{}";
+        }
+    }
+
+    private Map<String, Object> getCredentialExt(){
+
+        Map<String, Object> root = new HashMap<>();
+
+        if (credentialExtSize > 0) {
+            root.put("additionalProp1", getRandomString(credentialExtSize));
+            return root;
+        } else {
+            return root;
         }
     }
 

@@ -24,7 +24,8 @@ public class Config {
     private boolean plainPasswords;
     private boolean dynamicPasswords;
     private boolean disableConnectionPool;
-    private int registrationPayloadSize;
+    private int registrationExtPayloadSize;
+    private int credentialExtPayloadSize;
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -98,16 +99,24 @@ public class Config {
         return dynamicPasswords;
     }
 
-    public int getRegistrationPayloadSize() {
-        return registrationPayloadSize;
+    public int getRegistrationExtPayloadSize() {
+        return registrationExtPayloadSize;
     }
 
-    public void setRegistrationPayloadSize(int registrationPayloadSize) {
-        this.registrationPayloadSize = registrationPayloadSize;
+    public void setRegistrationExtPayloadSize(int registrationExtPayloadSize) {
+        this.registrationExtPayloadSize = registrationExtPayloadSize;
     }
 
     public void setDisableConnectionPool(boolean disableConnectionPool) {
         this.disableConnectionPool = disableConnectionPool;
+    }
+
+    public int getCredentialExtPayloadSize() {
+        return credentialExtPayloadSize;
+    }
+
+    public void setCredentialExtPayloadSize(int credentialExtPayloadSize) {
+        this.credentialExtPayloadSize = credentialExtPayloadSize;
     }
 
     public boolean isDisableConnectionPool() {
@@ -155,7 +164,8 @@ public class Config {
         Environment.consumeAs("PLAIN_PASSWORDS", Boolean::parseBoolean, result::setPlainPasswords);
         Environment.consumeAs("DYNAMIC_PASSWORDS", Boolean::parseBoolean, result::setDynamicPasswords);
         Environment.consumeAs("DISABLE_CONNECTION_POOL", Boolean::parseBoolean, result::setDisableConnectionPool);
-        Environment.consumeAs("REGISTRATION_PAYLOAD_SIZE", Integer::parseInt, result::setRegistrationPayloadSize);
+        Environment.consumeAs("REGISTRATION_EXT_PAYLOAD_SIZE", Integer::parseInt, result::setRegistrationExtPayloadSize);
+        Environment.consumeAs("CREDENTIAL_EXT_PAYLOAD_SIZE", Integer::parseInt, result::setCredentialExtPayloadSize);
 
         return result;
     }
@@ -173,7 +183,7 @@ public class Config {
                 .add("registryUrl", this.registryUrl)
                 .add("tenantId", this.tenantId)
                 .add("disableConnectionPool", this.disableConnectionPool)
-                .add("registrationPayloadSize", this.registrationPayloadSize)
+                .add("registrationExtPayloadSize", this.registrationExtPayloadSize)
                 .toString();
     }
 
