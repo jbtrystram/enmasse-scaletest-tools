@@ -24,6 +24,7 @@ public class Config {
     private boolean plainPasswords;
     private boolean dynamicPasswords;
     private boolean disableConnectionPool;
+    private int registrationPayloadSize;
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -97,6 +98,14 @@ public class Config {
         return dynamicPasswords;
     }
 
+    public int getRegistrationPayloadSize() {
+        return registrationPayloadSize;
+    }
+
+    public void setRegistrationPayloadSize(int registrationPayloadSize) {
+        this.registrationPayloadSize = registrationPayloadSize;
+    }
+
     public void setDisableConnectionPool(boolean disableConnectionPool) {
         this.disableConnectionPool = disableConnectionPool;
     }
@@ -146,6 +155,7 @@ public class Config {
         Environment.consumeAs("PLAIN_PASSWORDS", Boolean::parseBoolean, result::setPlainPasswords);
         Environment.consumeAs("DYNAMIC_PASSWORDS", Boolean::parseBoolean, result::setDynamicPasswords);
         Environment.consumeAs("DISABLE_CONNECTION_POOL", Boolean::parseBoolean, result::setDisableConnectionPool);
+        Environment.consumeAs("REGISTRATION_PAYLOAD_SIZE", Integer::parseInt, result::setRegistrationPayloadSize);
 
         return result;
     }
@@ -163,6 +173,7 @@ public class Config {
                 .add("registryUrl", this.registryUrl)
                 .add("tenantId", this.tenantId)
                 .add("disableConnectionPool", this.disableConnectionPool)
+                .add("registrationPayloadSize", this.registrationPayloadSize)
                 .toString();
     }
 

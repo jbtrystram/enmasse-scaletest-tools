@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.Random;
 
@@ -42,6 +43,7 @@ public class Creater implements AutoCloseable {
     private final boolean plain;
     private final boolean dynamic;
     private final Statistics stats;
+    private final String registrationBody;
 
     private OkHttpClient client;
     private HttpUrl registerUrl;
@@ -78,9 +80,12 @@ public class Creater implements AutoCloseable {
                 .addPathSegment(config.getTenantId())
                 .build();
 
+        this.registrationBody = getRegistrationBody();
+
         System.out.println("Register URL: " + this.registerUrl);
         System.out.println("Credentials URL: " + this.credentialsUrl);
         System.out.println("Device ID example value:" + this.config.getDeviceIdPrefix() + 0);
+        System.out.println("Registration body:" + this.registrationBody);
         System.out.println("Credential Example JSON: " + credentialJson(0));
 
         this.stats = new Statistics(System.out, Duration.ofSeconds(10));
@@ -121,7 +126,7 @@ public class Creater implements AutoCloseable {
                         .newBuilder()
                         .addPathSegment(deviceId)
                         .build())
-                .post(RequestBody.create("{}", JSON))
+                .post(RequestBody.create(this.registrationBody, JSON))
                 .build();
 
         try (Response response = this.client.newCall(register).execute()) {
@@ -203,5 +208,37 @@ public class Creater implements AutoCloseable {
             digest.update(salt);
         }
         return Base64.getEncoder().encodeToString(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private String getRegistrationBody(){
+        final int size = config.getRegistrationPayloadSize();
+
+        if (size > 0) {
+            Map<String, Object> root = new HashMap<>();
+            root.put("enabled", "true");
+
+            Map<String, Object> ext = new HashMap<>();
+
+            ext.put("additionalProp1", getRandomString(size));
+            root.put("ext", ext);
+
+            return Exceptions.wrap(() -> mapper.writeValueAsString(root));
+        } else {
+            return "{}";
+        }
+    }
+
+    private String getRandomString(final int size){
+        Random random = ThreadLocalRandom.current();
+        final char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                .toCharArray();
+
+        StringBuffer out = new StringBuffer(size);
+        for (int i = 0; i < size; i++)
+        {
+            out.append(alphabet[random.nextInt(alphabet.length)]);
+        }
+
+        return out.toString();
     }
 }
