@@ -6,6 +6,10 @@ spec:
   backoffLimit: 1
   parallelism: 5
   template:
+    metadata:
+      labels:
+        job-name: http-inserter
+        metrics: enabled
     spec:
       serviceAccount: http-inserter
       containers:
@@ -36,6 +40,12 @@ spec:
               value: "false"
             - name: MAX_DEVICES
               value: "2000"
+            - name: DYNAMIC_PASSWORDS
+              value: "true"
+          ports:
+            - name: metrics
+              containerPort: 8081
+              protocol: TCP
           resources:
             limits:
               memory: 256Mi
