@@ -3,6 +3,7 @@ package net.trystram.scaletest.httpReader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.glutamate.lang.Exceptions;
+import io.prometheus.client.Gauge;
 import net.trystram.scaletest.Tls;
 
 import java.nio.charset.StandardCharsets;
@@ -37,9 +38,16 @@ public class Reader implements AutoCloseable {
     private HttpUrl registrationUrl;
     private HttpUrl credentialsUrl;
 
+    private final Gauge possibleDeviceRange =
+            Gauge.build()
+                    .name("read_device_range")
+                    .help("The device range to query.")
+                .register();
+
     public Reader(Config config) throws Exception {
         this.config = config;
         this.max = config.getDeviceIdPrefixes().size();
+        this.possibleDeviceRange.set(this.config.getDevicesToRead() * this.max);
 
         var builder = new OkHttpClient.Builder();
         if (config.isDisableConnectionPool()) {
