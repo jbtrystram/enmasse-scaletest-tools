@@ -42,12 +42,20 @@ public class Reader implements AutoCloseable {
             Gauge.build()
                     .name("read_device_range")
                     .help("The device range to query.")
-                .register();
+                    .register();
+    private final Gauge totalDeviceRange =
+            Gauge.build()
+                    .name("read_device_totals")
+                    .help("The device range to query.")
+                    .register();
 
     public Reader(Config config) throws Exception {
         this.config = config;
         this.max = config.getDeviceIdPrefixes().size();
         this.possibleDeviceRange.set(this.config.getMaxDevicesCreated() * this.max);
+        Jobs.createdPerPod(config.getNamespace()).ifPresent(total -> {
+            this.totalDeviceRange.set(total * this.max);
+        });
 
         var builder = new OkHttpClient.Builder();
         if (config.isDisableConnectionPool()) {
@@ -138,7 +146,7 @@ public class Reader implements AutoCloseable {
                     return;
                 }
 
-                if ( config.isVerifyPasswords()) {
+                if (config.isVerifyPasswords()) {
                     // verify the credential
                     final JsonNode credential = this.mapper.readTree(response.body().bytes());
                     final JsonNode secrets = credential.get("secrets");

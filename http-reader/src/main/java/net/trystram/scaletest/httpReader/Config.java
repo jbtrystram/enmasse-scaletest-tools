@@ -9,6 +9,7 @@ import okhttp3.HttpUrl;
 
 public class Config {
 
+    private String namespace;
     private long maxDevicesCreated = Long.MAX_VALUE;
     private long devicesToRead = Long.MAX_VALUE;
     private List<String> deviceIdPrefixes;
@@ -19,6 +20,14 @@ public class Config {
     private boolean onlyRegister;
     private boolean disableConnectionPool;
     private boolean verifyPasswords;
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
 
     public void setMaxDevicesCreated(long maxDevicesCreated) {
         this.maxDevicesCreated = maxDevicesCreated;
@@ -96,6 +105,7 @@ public class Config {
         final Config result = new Config();
 
         final String namespace = Environment.getRequired("NAMESPACE");
+        result.setNamespace(namespace);
 
         final List<String> prefixes = Environment.get("DEVICE_ID_PREFIXES")
                 .map(str -> Arrays.asList(str.split("\\s*,\\s*")))
