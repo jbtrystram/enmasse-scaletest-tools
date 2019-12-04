@@ -47,7 +47,7 @@ public class Reader implements AutoCloseable {
     public Reader(Config config) throws Exception {
         this.config = config;
         this.max = config.getDeviceIdPrefixes().size();
-        this.possibleDeviceRange.set(this.config.getDevicesToRead() * this.max);
+        this.possibleDeviceRange.set(this.config.getMaxDevicesCreated() * this.max);
 
         var builder = new OkHttpClient.Builder();
         if (config.isDisableConnectionPool()) {
