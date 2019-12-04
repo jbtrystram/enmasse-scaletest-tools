@@ -35,21 +35,21 @@ public class Statistics implements AutoCloseable {
 
     private final Counter successCounter =
             Counter.build()
-                    .name("success")
+                    .name("read_success")
                     .help("Successful requests.").register();
     private final Counter errorCounter =
             Counter.build()
-                    .name("error")
+                    .name("read_error")
                     .labelNames("type")
                     .help("Failed requests.").register();
     private final Summary requestDevicesLatency =
             Summary.build()
-                    .name("requests_devices_latency_ms")
+                    .name("read_devices_latency_ms")
                     .help("Request latency in milliseconds.")
                     .register();
     private final Summary requestCredentialsLatency =
             Summary.build()
-                    .name("requests_credentials_latency_ms")
+                    .name("read_credentials_latency_ms")
                     .help("Request latency in milliseconds.")
                     .register();
 
