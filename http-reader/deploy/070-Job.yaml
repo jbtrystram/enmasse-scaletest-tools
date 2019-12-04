@@ -4,8 +4,12 @@ metadata:
   name: http-reader
 spec:
   backoffLimit: 1
-  parallelism: 50
+  parallelism: 5
   template:
+    metadata:
+      labels:
+        job-name: http-reader
+        metrics: enabled
     spec:
       serviceAccount: http-reader
       containers:
@@ -32,6 +36,10 @@ spec:
               value: "true"
             - name: VERIFY_PASSWORDS
               value: "true"
+          ports:
+            - name: metrics
+              containerPort: 8081
+              protocol: TCP
           resources:
             requests:
               cpu: "500m"
