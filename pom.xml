@@ -14,6 +14,7 @@
         <module>common</module>
         <module>http-inserter</module>
         <module>http-reader</module>
+        <module>infinispan-reporter</module>
     </modules>
 
   <properties>
