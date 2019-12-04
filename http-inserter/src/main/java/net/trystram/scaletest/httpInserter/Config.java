@@ -184,6 +184,7 @@ public class Config {
                 .add("tenantId", this.tenantId)
                 .add("disableConnectionPool", this.disableConnectionPool)
                 .add("registrationExtPayloadSize", this.registrationExtPayloadSize)
+                .add("credentialExtPayloadSize", this.credentialExtPayloadSize)
                 .toString();
     }
 
