@@ -72,6 +72,8 @@ spec:
   selector:
     matchLabels:
       metrics: enabled
+  podTargetLabels:
+    - "job-name"
   endpoints:
   - port: metrics
     interval: 10s
