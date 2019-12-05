@@ -2,6 +2,8 @@ package net.trystram.scaletest.infinispan;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
@@ -10,11 +12,18 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @ApplicationScoped
 @RegisterForReflection
+@Path("/info")
 public class InfinispanMetrics {
 
     @Inject
     @RestClient
     Infinispan infinispan;
+
+    @GET
+    @Path("/devices")
+    public Long devices() {
+        return this.infinispan.cacheSize("devices");
+    }
 
     @Gauge(name = "cache_entries", tags = {"cache=devices"}, unit = MetricUnits.NONE, description = "Total number of entries in the 'devices' cache")
     public Long cacheEntries() {
