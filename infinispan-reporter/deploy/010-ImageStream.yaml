@@ -1,0 +1,21 @@
+---
+kind: ImageStream
+apiVersion: v1
+metadata:
+ name: infinispan-reporter
+spec:
+  lookupPolicy:
+    local: true
+---
+kind: ImageStream
+apiVersion: v1
+metadata:
+ name: quarkus-native-s2i
+spec:
+ tags:
+ - name: "19.2"
+   from:
+     kind: DockerImage
+     name: quay.io/quarkus/ubi-quarkus-native-s2i:19.2.1
+   importPolicy:
+     scheduled: true

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: infinispan-reporter
+  labels:
+    name: infinispan-reporter
+  annotations:
+    image.openshift.io/triggers: |-
+      [
+        {
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "infinispan-reporter:latest"
+          },
+          "fieldPath": "spec.template.spec.containers[?(@.name==\"main\")].image"
+        }
+      ]
+spec:
+  serviceName: infinispan-reporter
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: infinispan-reporter
+  template:
+    metadata:
+      labels:
+        name: infinispan-reporter
+        metrics: enabled
+    spec:
+      containers:
+      - name: main
+        image: infinispan-reporter:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: metrics
+          containerPort: 8080
+          env:
+          - name: "net.trystram.scaletest.infinispan.Infinispan/mp-rest/url"
+            value: "http://app:test12@infinispan.enmasse-infra:11222"
