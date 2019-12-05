@@ -13,7 +13,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface Infinispan {
 
     @GET
-    @Path("/cache/{name}?action=size")
+    @Path("/caches/{name}?action=size")
     @Produces("text/plain")
     public long cacheSize(@PathParam String name);
 
