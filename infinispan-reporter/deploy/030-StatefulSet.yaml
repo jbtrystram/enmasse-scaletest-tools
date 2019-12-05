@@ -35,7 +35,7 @@ spec:
         image: infinispan-reporter:latest
         imagePullPolicy: IfNotPresent
         env:
-          - name: "net_trystram_scaletest_infinispan_Infinispan_mp_rest_url"
+          - name: "NET_TRYSTRAM_SCALETEST_INFINISPAN_INFINISPAN_MP_REST_URL"
             value: "http://app:test12@infinispan.enmasse-infra:11222"
           - name: "quarkus.http.port"
             value: "8081"
