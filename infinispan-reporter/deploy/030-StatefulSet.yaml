@@ -36,10 +36,11 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
           - name: "NET_TRYSTRAM_SCALETEST_INFINISPAN_INFINISPAN_MP_REST_URL"
-            value: "http://app:test12@infinispan.enmasse-infra:11222"
+            value: "http://infinispan.enmasse-infra:11222"
+          - name: "infinispan.credentials"
+            value: "app:test12"
           - name: "quarkus.http.port"
             value: "8081"
-
         ports:
         - name: metrics
           containerPort: 8081
