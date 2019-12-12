@@ -40,7 +40,7 @@ public class Statistics implements AutoCloseable {
     private final Counter errorCounter =
             Counter.build()
                     .name("read_error")
-                    .labelNames("type")
+                    .labelNames("type", "code")
                     .help("Failed requests.").register();
     private final Summary requestDevicesLatency =
             Summary.build()
@@ -115,18 +115,18 @@ public class Statistics implements AutoCloseable {
         });
     }
 
-    public synchronized void errorRegister() {
-        errorCounter.labels("device").inc();
+    public synchronized void errorRegister(final int code) {
+        errorCounter.labels("device", Integer.toString(code)).inc();
         this.errorRegister++;
     }
 
-    public synchronized void errorCredentials() {
-        errorCounter.labels("credentials").inc();
+    public synchronized void errorCredentials(final int code) {
+        errorCounter.labels("credentials", Integer.toString(code)).inc();
         this.errorCredentials++;
     }
 
     public synchronized void errorVerify() {
-        errorCounter.labels("verify").inc();
+        errorCounter.labels("verify", "0").inc();
         this.errorCredentials++;
     }
 

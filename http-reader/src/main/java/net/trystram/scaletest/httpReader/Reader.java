@@ -172,7 +172,7 @@ public class Reader implements AutoCloseable {
     }
 
     private void handleCredentialsFailure(final Response response) {
-        this.stats.errorCredentials();
+        this.stats.errorCredentials(response.code());
     }
 
     private void handleVerifyFailure(final Response response) {
@@ -180,7 +180,7 @@ public class Reader implements AutoCloseable {
     }
 
     private void handleRegistrationFailure(final Response response) {
-        this.stats.errorRegister();
+        this.stats.errorRegister(response.code());
     }
 
     private void handleSuccess(final Duration r, final Optional<Duration> c) {
