@@ -12,11 +12,21 @@ public class Config {
     private boolean plainPasswords;
     private boolean dynamicPasswords;
 
+    private boolean alternateCredentialFormat;
+
     private String dbHost;
     private String dbPort;
     private String dbUser;
     private String dbPassword;
     private String dbName;
+
+    public boolean isAlternateCredentialFormat() {
+        return alternateCredentialFormat;
+    }
+
+    public void setAlternateCredentialFormat(boolean alternateCredentialFormat) {
+        this.alternateCredentialFormat = alternateCredentialFormat;
+    }
 
     public void setDevicesToCreate(long devicesToCreate) {
         this.devicesToCreate = devicesToCreate;
@@ -128,6 +138,8 @@ public class Config {
         Environment.consumeAs("PLAIN_PASSWORDS", Boolean::parseBoolean, result::setPlainPasswords);
         Environment.consumeAs("DYNAMIC_PASSWORDS", Boolean::parseBoolean, result::setDynamicPasswords);
 
+        Environment.consumeAs("ALTERNATE_CREDENTIAL_FORMAT", Boolean::parseBoolean, result::setAlternateCredentialFormat);
+
         return result;
     }
 
@@ -139,6 +151,7 @@ public class Config {
                 .add("dbUser", this.dbUser)
                 .add("dbPassword", this.dbPassword)
                 .add("dbName", this.dbName)
+                .add("alternateCredentialFormat", this.alternateCredentialFormat)
                 .add("deviceIdPrefix", this.deviceIdPrefix)
                 .add("devicesToCreate", this.devicesToCreate)
                 .add("plainPasswords", this.plainPasswords)

@@ -95,7 +95,7 @@ public class Creater implements AutoCloseable {
         final List<String> params = new ArrayList<>();
         params.add(config.getTenantId());
         params.add(deviceId);
-        params.add(UUID.randomUUID().toString());
+        params.add(version);
         params.add(deviceInfo);
         params.add(creds);
 
@@ -118,12 +118,46 @@ public class Creater implements AutoCloseable {
         log.warn("Failed to process", e);
     }
 
+    private String credentialJson(final long i) {
+        if (config.isAlternateCredentialFormat()){
+            return alternateCredentialJson(i);
+        } else {
+            return standardCredentialJson(i);
+        }
+    }
 
-    private String credentialJson(long i) {
+    private String standardCredentialJson(long i) {
         final Map<String, Object> result = new HashMap<>(3);
         result.put("type", "hashed-password");
         result.put("auth-id", this.config.getDeviceIdPrefix() + "auth-" + i);
+        result.put("secrets", Collections.singletonList(secretJson(i)));
 
+        return Exceptions.wrap(() -> this.mapper.writeValueAsString(Collections.singletonList(result)));
+    }
+
+
+    // Alternate format :
+
+    // {
+    //   "hashed-password": {
+    //    "auth-1": {
+    //      "secrets": [ ... ]
+    //    }
+    //  }
+    //}
+    private String alternateCredentialJson(long i) {
+
+        final String authIdValue = this.config.getDeviceIdPrefix() + "auth-" + i;
+        final Map<String, Object> result = new HashMap<>(3);
+
+        result.put("hashed-password", new HashMap<String, Object>()
+                    .put(authIdValue, new HashMap<String, Object>()
+                            .put("secrets", Collections.singletonList(secretJson(i)))));
+
+        return Exceptions.wrap(() -> this.mapper.writeValueAsString(Collections.singletonList(result)));
+    }
+
+    private Map<String, String> secretJson(final long i){
         final Map<String, String> secret = new HashMap<>(2);
         final String password = "longerThanUsualPassword-" + i;
         if (this.plain) {
@@ -139,9 +173,7 @@ public class Creater implements AutoCloseable {
             secret.put("hash-function", "sha-256");
             secret.put("salt", Base64.getEncoder().encodeToString(salt));
         }
-        result.put("secrets", Collections.singletonList(secret));
-
-        return Exceptions.wrap(() -> this.mapper.writeValueAsString(Collections.singletonList(result)));
+        return secret;
     }
 
     private String deviceJson(long i) {
