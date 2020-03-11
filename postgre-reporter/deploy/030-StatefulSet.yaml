@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgre-reporter
+  labels:
+    name: postgre-reporter
+  annotations:
+    image.openshift.io/triggers: |-
+      [
+        {
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "postgre-reporter:latest"
+          },
+          "fieldPath": "spec.template.spec.containers[?(@.name==\"main\")].image"
+        }
+      ]
+spec:
+  serviceName: postgre-reporter
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: postgre-reporter
+  template:
+    metadata:
+      labels:
+        name: postgre-reporter
+        metrics: enabled
+    spec:
+      containers:
+      - name: main
+        image: postgre-reporter:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: "quarkus.datasource.url"
+            value: "vertx-reactive:postgresql://postgresql.device-registry-storage.svc/device-registry"
+          - name: "quarkus.datasource.username"
+            value: "registry"
+          - name: "quarkus.datasource.password"
+            value: "user12"
+          - name: "quarkus.http.port"
+            value: "8081"
+        ports:
+        - name: metrics
+          containerPort: 8081
+
