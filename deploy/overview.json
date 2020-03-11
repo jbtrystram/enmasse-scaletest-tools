@@ -468,7 +468,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "application_net_trystram_scaletest_infinispan_InfinispanMetrics_cache_entries{cache=\"devices\"}",
+          "expr": "application_net_trystram_scaletest_infinispan_PostgreMetrics_table_entries{table=\"devices\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "devices",
